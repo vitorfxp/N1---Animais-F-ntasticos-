@@ -1,19 +1,27 @@
-version: '3.8'
 
+version: '3.8'
 services:
-  web-app:
+  animais-fantasticos:
     build: .
-    container_name: meu_projeto_web
-    restart: always
+    container_name: animais-fantasticos
+    restart: unless-stopped
     networks:
-      - traefik-net
+      - traefik
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.meu-app.rule=Host(`seu-subdominio.com`)"
-      - "traefik.http.routers.meu-app.entrypoints=websecure"
-      - "traefik.http.routers.meu-app.tls.certresolver=myresolver"
-      - "traefik.http.services.meu-app.loadbalancer.server.port=80"
+
+      # Roteador HTTP -> troque o domínio pelo seu
+      - "traefik.http.routers.animais.rule=Host(`animais.seudominio.com`)"
+      - "traefik.http.routers.animais.entrypoints=web"
+
+      # Porta interna do container (Nginx escuta na 80)
+      - "traefik.http.services.animais.loadbalancer.server.port=80"
+
+      # --- HTTPS (descomente se seu Traefik tiver um certresolver) ---
+      # - "traefik.http.routers.animais.entrypoints=websecure"
+      # - "traefik.http.routers.animais.tls=true"
+      # - "traefik.http.routers.animais.tls.certresolver=letsencrypt"
 
 networks:
-  traefik-net:
-    external: true
+  traefik:
+    external: true   # rede onde o seu Traefik já está rodando
