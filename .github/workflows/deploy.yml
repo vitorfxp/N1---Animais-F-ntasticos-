@@ -1,20 +1,52 @@
-name: Deploy Contínuo
+name: Continuos Integration
 
 on:
+  pull_request:
+    branches:
+      ['main']
   push:
-    branches: [ "main" ]
+    branches: ['main']
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
-  deploy:
+  validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Executar Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
+      - uses: actions/checkout@v4
+
+      - name: Validar HTML
+        run: npx --yes html-validate index.html
+
+      - name: Validar JS
+        run: npx --yes eslint main.js
+  
+  build-image:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build da imagem
+        run: docker build -t animais-fantasticos .
+
+  deploy:
+    needs: build-image
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
         with:
-          host: 178.156.193.212
-          username: root
-          password: ${{ secrets.SSH_PASSWORD }}
-          script: |
-            cd /root/projeto
-            git pull origin main
-            docker compose up -d --build
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:latest
