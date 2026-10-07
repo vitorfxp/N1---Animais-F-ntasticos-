@@ -52,6 +52,10 @@ levá-la do código até a produção, de forma reprodutível, automatizada, seg
 | # | Nome completo | GitHub |
 |---|---------------|--------|
 | 1 | João Vitor Ferreira Ribeiro | [@vitorfxp](https://github.com/vitorfxp) |
+| 2 | Cassio Bona Eulalio         | [@caz1ogit](https://github.com/caz1ogit) |
+| 3 | Victor Hugo Brilhante | [@vhbrilhante](https://github.com/vhbrilhante) |
+| 4 | Pedro Henrique Carpina Farias Alves |
+| 5 | Marcelo Henrique Maciel da Silva |
 
 > **Obrigatório (requisito 1 da N1):** o `index.html` deve exibir na página inicial a **disciplina**
 > e o **nome completo de todos os integrantes**. Verifique o bloco `<footer class="copy">` em
