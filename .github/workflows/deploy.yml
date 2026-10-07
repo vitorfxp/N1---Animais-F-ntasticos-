@@ -50,7 +50,7 @@ jobs:
           push: true
           tags: ghcr.io/vitorfxp/animais-fantasticos:latest
 
-            - name: Atualizar serviço no Swarm
+      - name: Atualizar serviço no Swarm
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.SERVER_HOST }}
