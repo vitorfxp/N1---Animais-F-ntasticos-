@@ -79,6 +79,15 @@ body {
   grid-column: 1 / 4;
 }
 
+.titulo-2 {
+  font-family: "Playfair Display SC";
+  font-size: 2rem;
+  line-height: 1;
+  font-weight: 400;
+  margin-bottom: 1rem;
+  grid-column: 1 / 4;
+}
+
 .animais h2 {
   font-family: monospace;
   font-size: 1rem;
@@ -185,6 +194,26 @@ body {
   margin-bottom: 10px;
   font-family: Helvetica, Arial;
   font-size: 1rem;
+}
+
+.integrantes {
+  grid-column: 2/4;
+}
+
+.integrantes li::before {
+  content: "";
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 10px;
+  background: #fb5;
+  border-radius: 50%;
+}
+
+.integrantes li {
+  margin-bottom: 10px;
+  font-family: Helvetica, Arial;
+  font-size: 1.1rem;
 }
 
 .copy {
