@@ -164,6 +164,7 @@ hr { border: 0; border-top: 1px solid var(--borda); margin: 16px 0 12px; }
 }
 .parte {
   display: flex; align-items: center; gap: 12px; padding: 0 16px; color: #fff; white-space: nowrap;
+  width: 50%;
   transition: width 1.2s cubic-bezier(.22, 1, .36, 1);
   min-width: 0;
 }
@@ -461,3 +462,6 @@ hr { border: 0; border-top: 1px solid var(--borda); margin: 16px 0 12px; }
   .coluna, .coluna-dir { min-height: 0; overflow: auto; scrollbar-width: thin; }
   .palco { min-height: 0; }
 }
+
+.rodape .creditos { color: var(--apagado); text-align: center; flex: 1; justify-content: center; }
+@media (max-width: 1280px) { .rodape .creditos { order: 3; flex-basis: 100%; } }

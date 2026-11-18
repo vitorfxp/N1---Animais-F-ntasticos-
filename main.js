@@ -1,6 +1,7 @@
 /* Radar · tráfego do servidor ao vivo
    Dados: /api/trafego (agregado) e /api/eventos (últimos eventos, sem IP), servidos pela API do
    monitoramento (/root/projeto/monitoring/traffic-api). */
+/* global Globe, topojson, matchMedia, getComputedStyle, performance, requestAnimationFrame, ResizeObserver */
 (function () {
   'use strict';
 
@@ -24,9 +25,9 @@
   const fmt = n => nf.format(Math.round(n || 0));
   const fmtK = n => n >= 1e6 ? nf1.format(n / 1e6) + ' mi' : n >= 1e4 ? nf1.format(n / 1e3) + ' mil' : fmt(n);
   let regioes = null;
-  try { regioes = new Intl.DisplayNames(['pt-BR'], { type: 'region' }); } catch (e) { /* navegador antigo */ }
+  try { regioes = new Intl.DisplayNames(['pt-BR'], { type: 'region' }); } catch { /* navegador antigo */ }
   const nomePais = (code, nome) => {
-    if (code && code.length === 2 && regioes) { try { return regioes.of(code); } catch (e) {} }
+    if (code && code.length === 2 && regioes) { try { return regioes.of(code); } catch {} }
     return nome || 'Origem desconhecida';
   };
   const CONTINENTES = { AF: 'África', AN: 'Antártida', AS: 'Ásia', EU: 'Europa', NA: 'América do Norte', OC: 'Oceania', SA: 'América do Sul' };
@@ -431,7 +432,7 @@
       renderTudo();
       $('#placar-atualizado').textContent = 'ao vivo';
       $('#placar-atualizado').className = 'verde';
-    } catch (e) {
+    } catch {
       $('#placar-atualizado').textContent = 'sem conexão com os dados, tentando de novo…';
       $('#placar-atualizado').className = 'vermelho';
     }
@@ -448,7 +449,7 @@
       // espalha os novos ao longo do próximo intervalo, na ordem em que chegaram
       vivos.slice().reverse().forEach((e, i, arr) => lancar(e, primeira ? i * 250 : i * (INTERVALO_EVENTOS / Math.max(1, arr.length))));
       renderFeed(primeira ? [] : novos);
-    } catch (e) { /* tenta de novo no próximo ciclo */ }
+    } catch { /* tenta de novo no próximo ciclo */ }
   }
 
   // ------------------------------------------------------------------ controles
@@ -480,7 +481,7 @@
     const novo = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
     document.documentElement.setAttribute('data-theme', novo);
     document.querySelector('meta[name="theme-color"]').content = novo === 'light' ? '#F1F0EE' : '#0B0B0A';
-    try { localStorage.setItem('radar-tema', novo); } catch (e) {}
+    try { localStorage.setItem('radar-tema', novo); } catch {}
     aplicarTemaGlobo(); desenharCamadas();
   });
   $('#btn-tela').addEventListener('click', () => {
@@ -494,7 +495,7 @@
     try {
       const topo = await buscar('data/countries-110m.json');
       iniciarGlobo(topo);
-    } catch (e) {
+    } catch {
       elGlobo.innerHTML = '<p class="vazio" style="padding:40px;text-align:center">Não foi possível carregar o globo.</p>';
     }
     await atualizarTrafego();
