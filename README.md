@@ -10,26 +10,48 @@
 
 ## Sumário
 
-1. [Objetivo](#1-objetivo)
-2. [Integrantes do grupo](#2-integrantes-do-grupo)
-3. [A aplicação](#3-a-aplicação)
-4. [Arquitetura do ambiente](#4-arquitetura-do-ambiente)
-5. [Tecnologias utilizadas](#5-tecnologias-utilizadas)
-6. [Estrutura do projeto](#6-estrutura-do-projeto)
-7. [Versionamento (Git)](#7-versionamento-git)
-8. [Containerização (Docker)](#8-containerização-docker)
-9. [Ambiente Cloud](#9-ambiente-cloud)
-10. [DNS](#10-dns)
-11. [HTTPS](#11-https)
-12. [CI/CD](#12-cicd)
-13. [Monitoramento](#13-monitoramento)
-14. [Segurança](#14-segurança)
-15. [Processo de instalação](#15-processo-de-instalação)
-16. [Processo de deploy](#16-processo-de-deploy)
-17. [Procedimentos de recuperação](#17-procedimentos-básicos-de-recuperação)
-18. [Evidências da N1](#18-evidências-da-n1)
-19. [Guia de defesa técnica (N2)](#19-guia-de-defesa-técnica-n2)
-20. [Licença](#20-licença)
+- [PROJETO INTEGRADOR — CLOUD \& DEVOPS (N1)](#projeto-integrador--cloud--devops-n1)
+    - [Animais Fantásticos — aplicação web containerizada e publicada em nuvem](#animais-fantásticos--aplicação-web-containerizada-e-publicada-em-nuvem)
+  - [Sumário](#sumário)
+  - [1. Objetivo](#1-objetivo)
+  - [2. Integrantes do grupo](#2-integrantes-do-grupo)
+  - [3. A aplicação](#3-a-aplicação)
+  - [4. Arquitetura do ambiente](#4-arquitetura-do-ambiente)
+  - [5. Tecnologias utilizadas](#5-tecnologias-utilizadas)
+  - [6. Estrutura do projeto](#6-estrutura-do-projeto)
+  - [7. Versionamento (Git)](#7-versionamento-git)
+  - [8. Containerização (Docker)](#8-containerização-docker)
+    - [8.1 Entendendo a cadeia](#81-entendendo-a-cadeia)
+    - [8.2 Dockerfile](#82-dockerfile)
+    - [8.3 Docker Compose](#83-docker-compose)
+    - [8.4 Comandos de operação](#84-comandos-de-operação)
+    - [8.5 .dockerignore](#85-dockerignore)
+  - [9. Ambiente Cloud](#9-ambiente-cloud)
+  - [10. DNS](#10-dns)
+  - [11. HTTPS](#11-https)
+  - [12. CI/CD](#12-cicd)
+  - [13. Monitoramento](#13-monitoramento)
+    - [13.1 Observabilidade completa (Radar)](#131-observabilidade-completa-radar)
+  - [14. Segurança](#14-segurança)
+    - [Recomendações de evolução (bônus na N2)](#recomendações-de-evolução-bônus-na-n2)
+  - [15. Processo de instalação](#15-processo-de-instalação)
+    - [15.1 Requisitos](#151-requisitos)
+    - [15.2 Execução local](#152-execução-local)
+    - [15.3 Instalação do servidor do zero](#153-instalação-do-servidor-do-zero)
+    - [15.4 Provisionamento com Ansible](#154-provisionamento-com-ansible)
+    - [15.5 Instruções de acesso HTTP/HTTPS](#155-instruções-de-acesso-httphttps)
+  - [16. Processo de deploy](#16-processo-de-deploy)
+  - [17. Procedimentos básicos de recuperação](#17-procedimentos-básicos-de-recuperação)
+    - [17.1 Aplicação fora do ar](#171-aplicação-fora-do-ar)
+    - [17.2 Container parado ou reiniciando](#172-container-parado-ou-reiniciando)
+    - [17.3 Problema no reverse proxy / HTTP 502](#173-problema-no-reverse-proxy--http-502)
+    - [17.4 Problema de DNS](#174-problema-de-dns)
+    - [17.5 Problema de HTTPS / certificado inválido](#175-problema-de-https--certificado-inválido)
+    - [17.6 Falta de espaço em disco](#176-falta-de-espaço-em-disco)
+    - [17.7 Recuperação completa do servidor](#177-recuperação-completa-do-servidor)
+  - [18. Evidências da N1](#18-evidências-da-n1)
+  - [19. Guia de defesa técnica (N2)](#19-guia-de-defesa-técnica-n2)
+  - [20. Licença](#20-licença)
 
 ---
 
@@ -339,7 +361,7 @@ cd /root/projeto && git pull origin main && docker compose ps
 
 ## 10. DNS
 
-**Domínio utilizado:** `manager01hetzner.infiniymais.com.br:7070` 
+**Domínio utilizado:** `manager01hetzner.infiniymais.com.br:7070`
 
 **Configuração — registro tipo A:**
 
@@ -851,4 +873,4 @@ Traefik são dependências críticas, e o disco cheio derruba tudo.
 
 Projeto sob a licença **MIT** — veja [LICENSE](LICENSE).
 
-Desenvolvido como entrega da **N1 do Projeto Integrador — Cloud Computing & DevOps**.
+Desenvolvido como entrega da **N1 do Projeto Integrador — Cloud Computing & DevOps**
