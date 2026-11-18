@@ -10,6 +10,12 @@ IP público, chaves e senhas foram substituídos por placeholders antes de versi
 | `ansible-idempotencia.txt` | segunda execução com `changed=0` |
 | `docker-stacks.txt` | `docker ps`, `docker compose ls`, `docker service ls`, versões |
 | `http-https.txt` | VirtualHosts do Apache, certificados, endpoints HTTP/HTTPS e TLS |
+| `img/site.png` | tela do site publicado em HTTPS |
+| `img/radar.png` | tela do radar de tráfego |
+| `img/grafana.png` | Grafana no ar (tela de login) |
+
+> O Uptime Kuma é uma SPA que não renderiza em navegador headless; a evidência dele é o
+> `http-https.txt` (HTTP 200) e o `docker-stacks.txt` (serviço `1/1`).
 
 ## Como reproduzir
 
