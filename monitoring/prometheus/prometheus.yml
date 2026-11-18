@@ -47,9 +47,11 @@ scrape_configs:
       - targets: ["https://grafana.infinitymais.com.br/api/health"]
         labels: { app: "Grafana (grafana.infinitymais.com.br)" }
       - targets: ["https://animaisfantasticos.infinitymais.com.br/"]
-        labels: { app: "Site mapa de tráfego" }
-      - targets: ["https://animaisfantasticos.infinitymais.com.br/api/saude"]
-        labels: { app: "API do mapa de tráfego" }
+        labels: { app: "Site Animais Fantásticos" }
+      - targets: ["https://radarenchant.infinitymais.com.br/"]
+        labels: { app: "Radar (radarenchant)" }
+      - targets: ["https://radarenchant.infinitymais.com.br/api/saude"]
+        labels: { app: "API do Radar" }
     relabel_configs: &probe_relabel
       - source_labels: [__address__]
         target_label: __param_target

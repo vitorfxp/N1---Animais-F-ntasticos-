@@ -1,182 +1,128 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="en">
 
 <head>
   <meta charset="UTF-8">
-  <title>Radar · tráfego do servidor ao vivo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="De onde vem o tráfego que chega no servidor, ao vivo: acessos HTTP e tentativas de SSH no globo.">
-  <meta name="theme-color" content="#0B0B0A">
-  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <title>Animais Fantásticos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@500&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@1,18..144,900&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script>
-    (function () {
-      var t = null;
-      try { t = localStorage.getItem('radar-tema'); } catch (e) {}
-      if (!t) t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', t);
-    })();
+    document.documentElement.className += ' js'
   </script>
 </head>
 
 <body>
-  <header class="topo">
-    <a class="marca" href="./" aria-label="Radar, início">
-      <img src="img/logo.svg" alt="" width="26" height="26">
-      <span>radar</span>
-    </a>
+  <nav class="menu js-menu">
+    <ul>
+      <li><a href="#animais">Animais</a></li>
+      <li><a href="#faq">Faq</a></li>
+      <li><a href="#contato">Contato</a></li>
+    </ul>
+  </nav>
 
-    <nav class="segmento" role="tablist" aria-label="Tipo de tráfego">
-      <button type="button" role="tab" class="ativo" data-filtro="tudo" aria-selected="true">Tudo</button>
-      <button type="button" role="tab" data-filtro="http" aria-selected="false">Acessos HTTP</button>
-      <button type="button" role="tab" data-filtro="ssh" aria-selected="false">Tentativas SSH</button>
-    </nav>
+  <section class="grid-section animais js-scroll" id="animais">
+    <h1 class="titulo">Animais Fantásticos</h1>
+    <ul class="animais-lista js-tabmenu">
+      <li><img alt="img1" src="img/imagem1.jpg"></li>
+      <li><img alt="img2" src="img/imagem2.jpg"></li>
+      <li><img alt="img3" src="img/imagem3.jpg"></li>
+      <li><img alt="img4" src="img/imagem4.jpg"></li>
+      <li><img alt="img5" src="img/imagem5.jpg"></li>
+      <li><img alt="img6" src="img/imagem6.jpg"></li>
+    </ul>
+    <div class="animais-descricao js-tabcontent">
+      <section>
+        <h2>Raposa</h2>
+        <p>As raposas são animais mamíferos e onívoros pertencentes à família Canidae. São vulpídeos de porte médio, caracterizados por um focinho comprido e uma cauda longa e peluda.</p>
+        <p>Também apresentam como particularidade suas pupilas ovais, semelhantes às pupilas verticais dos felídeos.</p>
+        <p>De cerca de 40 espécies reconhecidas como raposas, somente 12 pertencem ao gênero Vulpes das "raposas verdadeiras", do qual a raposa vermelha é a mais comum.</p>
+        <p>As raposas são animais mamíferos e onívoros pertencentes à família Canidae. São vulpídeos de porte médio, caracterizados por um focinho comprido e uma cauda longa e peluda.</p>
+      </section>
 
-    <div class="patrocinio">Servidor em <strong id="servidor-cidade">Ashburn, EUA</strong></div>
+      <section>
+        <h2>Esquilo</h2>
+        <p>Os esquilos pertencem a uma grande família de mamíferos roedores, de pequeno e médio porte, conhecida como Sciuridae. No Brasil, são também conhecidos como serelepe, caxinguelê, caxinxe, quatimirim, quatipuru, agutipuru ou acutipuru.</p>
+        <p>Na Galiza e em algumas zonas de Portugal, também são conhecido por esquio.</p>
+        <p>Os esquilos estão espalhados por quase todo o mundo, a maioria nas zonas de climas temperado ou tropical, mas também em algumas zonas de clima frio. Como todos os roedores, possuem presas fortíssimas, com que roem facilmente sementes, principalmente bolotas.</p>
+      </section>
 
-    <div class="acoes">
-      <div class="segmento pequeno" role="tablist" aria-label="Período">
-        <button type="button" data-periodo="1h">1h</button>
-        <button type="button" data-periodo="6h">6h</button>
-        <button type="button" class="ativo" data-periodo="24h">24h</button>
-        <button type="button" data-periodo="7d">7d</button>
-      </div>
-      <button type="button" class="icone" id="btn-tema" title="Alternar tema" aria-label="Alternar tema">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-      </button>
-      <button type="button" class="icone" id="btn-tela" title="Tela cheia" aria-label="Tela cheia">
-        <svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
-      </button>
+      <section>
+        <h2>Urso</h2>
+        <p>Os Ursos (latim científico: Ursidae) constituem uma família de mamíferos carnívoros de grande porte, contendo os ursos e os pandas. Eles são classificados como caniformes ou carnívoros caninos.</p>
+        <p>Os ursos são encontrados nos continentes da América do Norte, América do Sul, Europa e Ásia.</p>
+        <p> As características comuns dos ursos modernos incluem corpos grandes com pernas atarracadas, focinhos longos, orelhas pequenas e arredondadas, cabelos desgrenhados, patas plantígradas com cinco garras não retráteis e caudas curtas.</p>
+      </section>
+
+      <section>
+        <h2>Lobo</h2>
+        <p>Lobo é um animal carnívoro da família dos canídeos e que pertence ao gênero Canis.</p>
+        <p>São três espécies que recebem tal designação: o lobo-cinzento (Canis lupus), lobo-etíope (Canis simensis) e o lobo-dourado-africano (Canis lupaster). O lobo-oriental (Canis lycaon) e o lobo-vermelho (Canis rufus), possuem classificações discutíveis se espécies em si, subespécies do lobo-cinzento, ou híbridos de lobo com coiote (coylobo).</p>
+        <p> Os lobos geralmente ostentam um porte maior em comparação às demais espécies de canídeos, além de possuírem ampla distribuição geográfica.</p>
+      </section>
+
+      <section>
+        <h2>Babuíno</h2>
+        <p>Babuíno é a designação genérica para antropoides cercopitecídeos do gênero Papio e afins, caracterizados pelo focinho pontudo, caninos grandes, bochechas volumosas e calosidades nas nádegas. É um animal semi-quadrúpede da ordem dos primatas que mede até 120 centímetros de comprimento</p>
+        <p>Ao contrário dos macacos, os babuínos passam a maior parte do tempo no chão. Suas caudas não são preênseis. Os babuínos são grandes lutadores e demonstram pouco medo de outros animais, inclusive seres humanos. Todos têm hierarquias fortes e complexas dentro dos grupos familiares.</p>
+        <p> Os babuínos são onívoros (omnívoros), isto é, comem muitos tipos diferentes de alimento. A sua dieta, entretanto, varia de acordo com a estação do ano, o território que está sendo habitado, a idade e o sexo do indivíduo. </p>
+      </section>
+
+      <section>
+        <h2>Leão</h2>
+        <p>O leão [feminino: leoa] (nome científico: Panthera leo) é uma espécie de mamífero carnívoro do gênero Panthera e da família Felidae.</p>
+        <p>. A espécie é atualmente encontrada na África subsaariana e na Ásia, com uma única população remanescente em perigo, no Parque Nacional da Floresta de Gir, Gujarat, Índia. Foi extinto na África do Norte e no Sudoeste Asiático em tempos históricos, e até o Pleistoceno Superior, há cerca de 10 000 anos, era o mais difundido grande mamífero terrestre depois dos humanos, sendo encontrado na maior parte da África, em muito da Eurásia, da Europa Ocidental à Índia, e na América, do Yukon ao México.</p>
+        <p> É um dos quatro grandes felinos, com alguns machos excedendo 250 quilogramas em peso, sendo o segundo maior felino recente depois do tigre.</p>
+      </section>
+
+
+
     </div>
-  </header>
-
-  <!-- Placar: SSH x HTTP (no estilo do placar da apuração) -->
-  <section class="placar cartao" aria-live="polite">
-    <div class="lado ssh">
-      <div class="avatar ssh" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-      </div>
-      <div>
-        <div class="nome">Tentativas SSH <span class="tag">porta 22</span></div>
-        <div class="sub">bots tentando entrar</div>
-      </div>
-    </div>
-
-    <h1 class="manchete" id="manchete"><span class="carregando-texto">Lendo os logs do servidor…</span></h1>
-
-    <div class="lado http">
-      <div>
-        <div class="nome"><span class="tag">80 · 443</span> Acessos HTTP</div>
-        <div class="sub">requisições aos sites</div>
-      </div>
-      <div class="avatar http" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>
-      </div>
-    </div>
-
-    <div class="barra" role="img" id="barra" aria-label="Proporção entre SSH e HTTP">
-      <div class="parte ssh" id="barra-ssh">
-        <span class="pct"><b id="pct-ssh">–</b><small>%</small></span>
-        <span class="votos" id="total-ssh">–</span>
-      </div>
-      <div class="parte http" id="barra-http">
-        <span class="votos" id="total-http">–</span>
-        <span class="pct"><b id="pct-http">–</b><small>%</small></span>
-      </div>
-      <div class="meio"><span>50%</span></div>
-    </div>
-    <div class="rodape-placar">
-      <span id="placar-paises">–</span>
-      <span><b class="verde" id="placar-atualizado">ao vivo</b></span>
-    </div>
-    <div class="progresso"><i id="progresso"></i></div>
   </section>
 
-  <main class="grade">
-    <!-- Coluna esquerda -->
-    <aside class="cartao coluna" aria-label="Ritmo e origens">
-      <h2>Ritmo</h2>
-      <p class="legenda">Eventos por minuto, média dos últimos 5 min</p>
-      <div class="duelo">
-        <div><small>SSH</small><strong class="vermelho" id="ritmo-ssh">–</strong></div>
-        <div class="dir"><small>HTTP</small><strong class="azul" id="ritmo-http">–</strong></div>
-      </div>
-      <p class="ao-vivo"><i></i> Coleta ao vivo</p>
-
-      <p class="destaque"><strong class="vermelho grande" id="num-paises">–</strong> países de origem</p>
-      <p class="legenda" id="frase-paises">no período selecionado</p>
-
-      <svg class="grafico" id="grafico" role="img" viewBox="0 0 300 140" preserveAspectRatio="none" aria-label="Eventos ao longo do tempo"></svg>
-      <div class="eixo"><span id="eixo-ini">–</span><span>eventos por intervalo</span><span>agora</span></div>
-
-      <hr>
-      <h3>Respostas dos sites</h3>
-      <p class="legenda">Códigos HTTP no período</p>
-      <div class="status" id="status"></div>
-
-      <h4><span class="ponto azul-bg"></span> Quem mais chega</h4>
-      <ol class="ranking" id="ranking"></ol>
-    </aside>
-
-    <!-- Globo -->
-    <section class="palco" aria-label="Globo com o tráfego chegando ao servidor">
-      <div class="abas">
-        <button type="button" class="ativo" data-modo="fluxo">Fluxo</button>
-        <button type="button" data-modo="paises">Países</button>
-        <button type="button" class="pilula" id="btn-girar" aria-pressed="true">
-          <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg> Girando
-        </button>
-      </div>
-      <div class="chip-evento" id="chip"><span class="mini" id="chip-cod">–</span><span id="chip-texto">Aguardando o próximo acesso…</span></div>
-      <div id="globo"></div>
-      <div class="chamadas" id="chamadas"></div>
-
-      <div class="legenda-mapa cartao">
-        <div><i class="q ssh"></i> SSH <b id="leg-ssh">–</b> &nbsp; <i class="q http"></i> HTTP <b id="leg-http">–</b></div>
-        <div class="escala"><span>menos</span><i></i><i></i><i></i><i></i><span>mais eventos</span></div>
-      </div>
-      <div class="zoom">
-        <button type="button" id="zoom-mais" aria-label="Aproximar">+</button>
-        <button type="button" id="zoom-menos" aria-label="Afastar">−</button>
-      </div>
-    </section>
-
-    <!-- Coluna direita -->
-    <aside class="coluna-dir" aria-label="Continentes e últimas chegadas">
-      <section class="cartao">
-        <h2>Por continente</h2>
-        <ul class="regioes" id="regioes"></ul>
-      </section>
-      <section class="cartao feed-cartao">
-        <h2>Últimas chegadas</h2>
-        <ul class="feed" id="feed"></ul>
-      </section>
-    </aside>
-  </main>
-
-  <!-- Linha do tempo -->
-  <section class="linha cartao">
-    <time id="relogio">--:--:--</time>
-    <div class="trilho" id="trilho" tabindex="0" role="slider" aria-label="Linha do tempo" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
-      <div class="barras" id="barras"></div>
-      <div class="cursor" id="cursor"></div>
-    </div>
-    <button type="button" class="ao-vivo-btn" id="btn-vivo"><i></i> Ao vivo</button>
+  <section class="grid-section faq js-scroll" id="faq">
+    <h1 class="titulo">FAQ</h1>
+    <dl class="faq-lista js-accordion">
+      <dt>Qual a idade dos animais?</dt>
+      <dd>Depende muito do animal que você está falando, mas a média é entre 10 a 30 anos.</dd>
+      <dt>Eles são fantásticos?</dt>
+      <dd>Sim, muitos!.</dd>
+      <dt>Qual a diferença?</dt>
+      <dd>Você pode ler acima acerca da diferença dos animais.</dd>
+      <dt>Como proteger?</dt>
+      <dd>Reciclando e cuidando da terra.</dd>
+    </dl>
   </section>
 
-  <footer class="rodape">
-    <span><i class="ponto-vivo"></i> <span id="rodape-total">–</span></span>
-    <span class="creditos" title="Projeto integrador">DevOps e Computação em Nuvem · Cassio Bona Eulalio, Pedro Henrique Carpina Farias Alves, João Vitor Ferreira Ribeiro, Marcelo Henrique Maciel da Silva, Victor Hugo Brilhante Bezerra</span>
-    <span>Dados: logs do servidor (Apache + SSH) · <a href="https://db-ip.com" target="_blank" rel="noopener">IP Geolocation by DB-IP</a> · sem IPs publicados</span>
+  <section class="grid-section contato js-scroll" id="contato">
+    <h1 class="titulo">Contato</h1>
+    <div class="mapa"><img alt="mapa" src="img/mapa.png"></div>
+    <ul class="dados">
+      <li>contato@origamid.com</li>
+      <li>+55 (21) 9999-9999</li>
+      <li>Rua do Conde, nº 21</li>
+      <li>Rio de Janeiro - RJ</li>
+      <li>Doe 0.0030 bitcoin para nos ajudar</li>
+      <li>Seg à Sex das 8 às 18</li>
+    </ul>
+  </section>
+
+  <section class="grid-section">
+    <h2 class="titulo-2">DevOps e Computação em Nuvem</h2>
+    <ul class="integrantes">
+      <li>Cassio Bona Eulalio</li>
+      <li>Pedro Henrique Carpina Farias Alves</li>
+      <li>João Vitor Ferreira Ribeiro</li>
+      <li>Marcelo Henrique Maciel da Silva</li>
+      <li>Victor Hugo Brilhante Bezerra</li>
+    </ul>
+  </section>
+
+  <footer class="copy">
+    <p>Todos os direitos reservados</p>
   </footer>
-
-  <div class="tooltip" id="tooltip" hidden></div>
-
-  <script src="js/vendor/topojson-client.min.js"></script>
-  <script src="js/vendor/globe.gl.min.js"></script>
   <script src="main.js"></script>
 </body>
 

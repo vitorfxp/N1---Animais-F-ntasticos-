@@ -161,7 +161,7 @@ def dashboard(uid, title, panels, tags, refresh="30s", time_from="now-6h", desc=
         "graphTooltip": 1, "panels": panels, "templating": {"list": []}, "annotations": {"list": []},
         "links": [{"type": "dashboards", "tags": ["radar"], "asDropdown": True,
                    "title": "Radar", "includeVars": False, "keepTime": True},
-                  {"type": "link", "title": "Site ao vivo", "url": "https://animaisfantasticos.infinitymais.com.br",
+                  {"type": "link", "title": "Site ao vivo", "url": "https://radarenchant.infinitymais.com.br",
                    "targetBlank": True, "icon": "external link", "tags": []}],
     }
 

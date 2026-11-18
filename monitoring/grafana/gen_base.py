@@ -6,7 +6,7 @@ Saída:    ./dashboards/0-mapa-de-trafego.json   <- "Nimbus | Mapa de calor" (Ca
           ./dashboards/6-containers-cadvisor.json <- "cAdvisor Docker Insights" (grafana.com 19908)
 
 Mantém layout, tipos de painel e estilo da base; troca as consultas, a paleta (a mesma do site
-https://animaisfantasticos.infinitymais.com.br) e a identidade ("Radar").
+https://radarenchant.infinitymais.com.br) e a identidade ("Radar").
 Uso: python3 gen_base.py
 """
 import copy
@@ -17,7 +17,7 @@ import re
 AQUI = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.join(AQUI, "base")
 OUT = os.path.join(AQUI, "dashboards")
-SITE = "https://animaisfantasticos.infinitymais.com.br"
+SITE = "https://radarenchant.infinitymais.com.br"
 
 # ------------------------------------------------------------------ paleta (igual ao site)
 SSH, SSH_ESC = "#E5303B", "#8E1F25"

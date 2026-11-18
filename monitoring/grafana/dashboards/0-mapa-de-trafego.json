@@ -33,7 +33,7 @@
       },
       "options": {
         "mode": "html",
-        "content": "<div style=\"display:flex;align-items:center;gap:14px;padding:4px 2px\">\n<img src=\"https://animaisfantasticos.infinitymais.com.br/img/logo.svg\" width=\"34\" height=\"34\" alt=\"\">\n<div><div style=\"font-size:20px;font-weight:600;letter-spacing:-.02em\">radar · mapa de tráfego</div>\n<div style=\"opacity:.7;font-size:12px\">De onde vem o que chega no servidor: acessos HTTP (Apache) em\n<b style=\"color:#3E63DD\">azul</b>, tentativas de SSH em <b style=\"color:#E5303B\">vermelho</b>.\nVersão pública e animada: <a href=\"https://animaisfantasticos.infinitymais.com.br\" target=\"_blank\">animaisfantasticos.infinitymais.com.br</a> ·\nGeoIP: <a href=\"https://db-ip.com\" target=\"_blank\">IP Geolocation by DB-IP</a></div></div></div>"
+        "content": "<div style=\"display:flex;align-items:center;gap:14px;padding:4px 2px\">\n<img src=\"https://radarenchant.infinitymais.com.br/img/logo.svg\" width=\"34\" height=\"34\" alt=\"\">\n<div><div style=\"font-size:20px;font-weight:600;letter-spacing:-.02em\">radar · mapa de tráfego</div>\n<div style=\"opacity:.7;font-size:12px\">De onde vem o que chega no servidor: acessos HTTP (Apache) em\n<b style=\"color:#3E63DD\">azul</b>, tentativas de SSH em <b style=\"color:#E5303B\">vermelho</b>.\nVersão pública e animada: <a href=\"https://radarenchant.infinitymais.com.br\" target=\"_blank\">radarenchant.infinitymais.com.br</a> ·\nGeoIP: <a href=\"https://db-ip.com\" target=\"_blank\">IP Geolocation by DB-IP</a></div></div></div>"
       }
     },
     {
@@ -4301,7 +4301,7 @@
     {
       "type": "link",
       "title": "Site ao vivo",
-      "url": "https://animaisfantasticos.infinitymais.com.br",
+      "url": "https://radarenchant.infinitymais.com.br",
       "targetBlank": true,
       "icon": "external link",
       "tags": []

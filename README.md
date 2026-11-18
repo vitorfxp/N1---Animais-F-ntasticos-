@@ -488,7 +488,8 @@ seguindo a base do [Tamoai-Infra](https://github.com/guisosi/Tamoai-Infra):
 
 | Endereço | O que é |
 |---|---|
-| <https://animaisfantasticos.infinitymais.com.br> | **Radar**: site deste repositório — globo 3D com o tráfego chegando ao servidor ao vivo (acessos HTTP em azul, tentativas de SSH em vermelho) |
+| <https://animaisfantasticos.infinitymais.com.br> | Site Animais Fantásticos (raiz do repositório) |
+| <https://radarenchant.infinitymais.com.br> | **Radar** ([`radar_enchant/`](radar_enchant/)): globo 3D com o tráfego chegando ao servidor ao vivo (acessos HTTP em azul, tentativas de SSH em vermelho) |
 | <https://grafana.infinitymais.com.br> | Grafana (com login): mapa de tráfego, host, containers, disponibilidade e falhas do ambiente |
 | <https://kuma.infinitymais.com.br> | Uptime Kuma (com login) |
 
@@ -507,7 +508,8 @@ Containers (cAdvisor), Aplicações, Containers parados, Recursos e Ambiente. Os
 **Subir/atualizar no servidor:**
 
 ```bash
-cd /root/projeto && docker compose up -d --build   # site (nginx em 127.0.0.1:8090)
+cd /root/projeto && docker compose up -d --build                # Animais Fantásticos (127.0.0.1:8090)
+cd /root/projeto/radar_enchant && docker compose up -d --build  # Radar (127.0.0.1:8091)
 bash /root/projeto/monitoring/deploy.sh            # stack de observabilidade + Grafana
 ```
 

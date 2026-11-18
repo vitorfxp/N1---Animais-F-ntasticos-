@@ -4,7 +4,6 @@ services:
     container_name: animais-fantasticos
     restart: unless-stopped
     # Só local: o Apache do host publica em https://animaisfantasticos.infinitymais.com.br
-    # (e encaminha /api/ para a API do mapa em 127.0.0.1:9300)
     ports:
       - "127.0.0.1:8090:80"
     mem_limit: 64m
