@@ -1,0 +1,43 @@
+# host
+manager1
+PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"
+NAME="Debian GNU/Linux"
+
+# docker version
+20.10.24+dfsg1
+
+# docker compose version
+Docker Compose version v5.7.1
+
+# docker ps
+NAMES                                          STATUS                    PORTS
+kuma_uptime-kuma.1.sz6c2rswg88lztj4zw6d933du   Up 10 minutes (healthy)   3001/tcp
+mon-promtail                                   Up 20 minutes             
+mon-loki                                       Up 20 minutes             
+radar-enchant                                  Up 5 hours                127.0.0.1:8091->80/tcp
+animais-fantasticos                            Up 5 hours                127.0.0.1:8090->80/tcp
+mon-prometheus                                 Up 5 hours                
+mon-blackbox                                   Up 5 hours                
+mon-cadvisor                                   Up 5 hours (healthy)      
+mon-trafego-api                                Up 5 hours                
+mon-node-exporter                              Up 5 hours                
+postgres-vpn                                   Up 5 hours                <POSTGRES_VPN_IP>:5439->5432/tcp
+laravel_app                                    Up 5 hours                0.0.0.0:8080->80/tcp, :::8080->80/tcp
+
+# docker compose ls
+NAME                STATUS              CONFIG FILES
+monitoring          running(7)          /root/projeto/monitoring/docker-compose.yml
+postgres-vpn        running(1)          /opt/postgres-vpn/docker-compose.yml
+projeto             running(2)          /root/projeto/docker-compose.yml,/root/projeto/docker-compose.yaml
+radar_enchant       running(1)          /root/projeto/radar_enchant/docker-compose.yml
+
+# docker service ls
+ID             NAME               MODE         REPLICAS   IMAGE                    PORTS
+61giz52l7obz   kuma_uptime-kuma   replicated   1/1        louislam/uptime-kuma:1   *:3001->3001/tcp
+lu5ddsp1gjt9   traefik_traefik    replicated   0/0        traefik:v2.11.3          
+
+# docker images (projeto)
+projeto-animais-fantasticos:latest 66.5MB
+radar_enchant-radar-enchant:latest 65MB
+projeto-site-animais-fantasticos:latest 65MB
+nginx:alpine 62.9MB

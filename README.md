@@ -575,34 +575,80 @@ docker compose ps
 curl -I http://localhost
 ```
 
-### 15.3 Instalação do servidor do zero (documentação do deploy)
+### 15.3 Instalação do servidor do zero
+
+O caminho recomendado é o **Ansible** (seção 15.4), que refaz o ambiente inteiro de forma idempotente.
+O equivalente manual, em Debian 12:
 
 ```bash
-# 1. Atualizar o sistema
-apt update && apt upgrade -y
+# 1. Base
+apt update
+apt install -y git curl ca-certificates apache2 certbot python3-certbot-apache gettext-base
 
-# 2. Instalar Docker (repositório oficial)
-apt install -y ca-certificates curl gnupg
-curl -fsSL https://get.docker.com | sh
+# 2. Docker + Compose
+apt install -y docker.io docker-compose-plugin
 systemctl enable --now docker
 
-# 3. Instalar Docker Compose v2
-apt install -y docker-compose-plugin
-
-# 4. Instalar o Traefik como reverse proxy
-docker run -d -p 80:80 -p 443:443 \
-  -v /var/run/docker.sock:/var/run/docker.sock:ro \
-  -v traefik-certs:/traefik/certs \
-  --name traefik traefik:v3.0
-
-# 5. Clonar o projeto
+# 3. Código (o branch ansible contém monitoring/, radar_enchant/ e ansible/)
 mkdir -p /root/projeto && cd /root/projeto
-git clone https://github.com/vitorfxp/N1---Animais-F-ntasticos- .
+git clone -b ansible https://github.com/vitorfxp/N1---Animais-F-ntasticos- .
+cp .env.example .env && vi .env          # SERVER_IP, chave SSH, etc.
 
-# 6. Subir o serviço
-docker compose up -d --build
-docker compose ps
+# 4. Containers do site e do radar
+docker compose --env-file .env up -d --build
+docker compose --env-file .env -f radar_enchant/docker-compose.yml up -d --build
+
+# 5. Monitoramento (Prometheus, Loki, Promtail, Grafana, Kuma)
+bash monitoring/deploy.sh
+
+# 6. Apache + TLS (vhosts em monitoring/apache/, renderizados a partir do .env)
+envsubst < monitoring/apache/animaisfantasticos.infinitymais.com.br.conf \
+  > /etc/apache2/sites-available/animaisfantasticos.infinitymais.com.br.conf
+a2ensite animaisfantasticos.infinitymais.com.br
+certbot --apache -d animaisfantasticos.infinitymais.com.br --redirect
 ```
+
+### 15.4 Provisionamento com Ansible
+
+**Requisitos no controlador:** `ansible-core` ≥ 2.15, acesso SSH por chave ao servidor e o arquivo `.env`.
+
+```bash
+cd ansible
+ansible --version
+ansible-inventory --list          # inventário dinâmico lê ../.env
+ansible-playbook playbook.yml --syntax-check
+ansible-playbook playbook.yml --check --diff
+ansible-playbook playbook.yml
+```
+
+O que o `playbook.yml` garante, nesta ordem:
+
+1. chave e pacotes base (inclui `gettext-base` para renderizar configs);
+2. Docker Engine e Compose;
+3. `traefik_traefik` em 0 réplicas (o Apache é quem termina o TLS);
+4. `.env` no servidor e containers do site e do radar;
+5. stack de observabilidade, cron, GeoIP, Grafana e dashboards;
+6. Apache: módulos, vhosts renderizados a partir do `.env` e `configtest`;
+7. certbot: hook de reload e renovação automática;
+8. verificação HTTP/HTTPS de todos os domínios.
+
+O playbook é **idempotente**: a segunda execução termina com `changed=0`.
+Evidências em [`evidencias/`](evidencias/): `ansible-run.txt` e `ansible-idempotencia.txt`.
+
+### 15.5 Instruções de acesso HTTP/HTTPS
+
+| Serviço | URL | Esperado |
+| --- | --- | --- |
+| Site | <https://animaisfantasticos.infinitymais.com.br> | 200 |
+| Radar de tráfego | <https://radarenchant.infinitymais.com.br> | 200 |
+| API do radar | <https://radarenchant.infinitymais.com.br/api/saude> | 200 |
+| Grafana | <https://grafana.infinitymais.com.br> | 200 (login) |
+| Uptime Kuma | <https://kuma.infinitymais.com.br> | 200 (login) |
+
+- Todo acesso HTTP na porta 80 responde **301** para HTTPS.
+- Os containers não são expostos: site em `127.0.0.1:8090`, radar em `127.0.0.1:8091`,
+  API em `127.0.0.1:9300`.
+- Verificação rápida: `curl -I https://animaisfantasticos.infinitymais.com.br/`.
 
 ---
 
@@ -612,18 +658,21 @@ O deploy é **totalmente automatizado** — o caminho do código até a produç�
 integrante do grupo:
 
 ```
-git push (branch main)  →  GitHub Actions  →  SSH no servidor
-                          →  git pull       →  docker compose up -d --build
-                          →  https://dominio já atualizado
+git push (branch main)  →  GitHub Actions  →  valida  →  build  →  GHCR
+                        →  SSH no servidor  →  docker service update (Swarm)
+                        →  https://dominio já atualizado
 ```
+
+> O CI/CD publica a imagem no GHCR e atualiza o serviço no Swarm.
+> O Ansible opera containers **standalone** (site, radar e monitoring). Use um caminho por host.
 
 **Deploy manual (fallback, se a pipeline falhar):**
 
 ```bash
-ssh root@XXX.XXX.XXX.XXX
+ssh root@<SERVER_IP>
 cd /root/projeto
-git pull origin main
-docker compose up -d --build
+git pull origin ansible
+docker compose --env-file .env up -d --build
 docker compose logs -f
 curl -I https://manager01hetzner.infinitymais.com.br:7070
 ```
@@ -710,20 +759,24 @@ docker compose up -d --build
 
 ## 18. Evidências da N1
 
-| Item obrigatório                        | Onde estão / como gerar                                              |
-|-----------------------------------------|-----------------------------------------------------------------------|
-| Link do repositório Git                 | Seção 7                                                               |
-| URL da aplicação funcionando            | https://manager01hetzner.infinitymais.com.br                          |
-| Documentação do projeto                 | este `README.md`                                                      |
-| Evidências do ambiente Cloud            | `uname -a`, `cat /etc/os-release`, `lsblk`, `free -h`, `ip a`, `df -h` |
-| Evidências do Docker                    | `docker images`, `docker ps`, `docker history`, `docker inspect`      |
-| Evidências da pipeline CI/CD            | aba **Actions** no repositório → execução "Deploy Contínuo"           |
-| Evidências do monitoramento             | painel do Uptime Kuma com o monitor ativo                             |
+| Item obrigatório | Onde está |
+| --- | --- |
+| Link do repositório Git | seção 7 |
+| URL da aplicação | <https://animaisfantasticos.infinitymais.com.br> |
+| Documentação | este `README.md` |
+| Playbook, inventário e variáveis | [`ansible/`](ansible/) (`playbook.yml`, `ansible.cfg`, `inventory.sh`) e [`.env.example`](.env.example) |
+| Código e arquivos de implantação | `index.html`, `css/`, `img/`, `main.js`, `Dockerfile`, `docker-compose.yml`, `radar_enchant/`, `monitoring/` |
+| Evidência da execução do Ansible | [`evidencias/ansible-run.txt`](evidencias/ansible-run.txt) e [`ansible-idempotencia.txt`](evidencias/ansible-idempotencia.txt) |
+| Evidência do Docker e das stacks | [`evidencias/docker-stacks.txt`](evidencias/docker-stacks.txt) |
+| Evidência de HTTP/HTTPS | [`evidencias/http-https.txt`](evidencias/http-https.txt) |
+| Pipeline CI/CD | aba **Actions** do repositório |
+| Monitoramento | <https://grafana.infinitymais.com.br> e <https://kuma.infinitymais.com.br> |
+| Índice das evidências | [`evidencias/README.md`](evidencias/README.md) |
 
-> **Importante:** não basta print. O ambiente deve estar **no ar** e disponível para validação do
-> professor durante e após a entrega.
+Coleta reproduzível: `bash scripts/coletar-evidencias.sh`.
 
----
+> O ambiente deve estar **no ar** durante a avaliação. O site, o radar, o Grafana e o Kuma
+> respondem em HTTPS; os containers escutam apenas no loopback do servidor.
 
 ## 19. Guia de defesa técnica (N2)
 

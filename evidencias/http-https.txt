@@ -1,0 +1,74 @@
+# Apache — VirtualHosts
+AH00558: apache2: Could not reliably determine the server's fully qualified domain name, using 127.0.0.1. Set the 'ServerName' directive globally to suppress this message
+VirtualHost configuration:
+*:443                  is a NameVirtualHost
+         default server animaisfantasticos.infinitymais.com.br (/etc/apache2/sites-enabled/animaisfantasticos.infinitymais.com.br-le-ssl.conf:4)
+         port 443 namevhost animaisfantasticos.infinitymais.com.br (/etc/apache2/sites-enabled/animaisfantasticos.infinitymais.com.br-le-ssl.conf:4)
+         port 443 namevhost grafana.infinitymais.com.br (/etc/apache2/sites-enabled/grafana.infinitymais.com.br-le-ssl.conf:2)
+         port 443 namevhost kuma.infinitymais.com.br (/etc/apache2/sites-enabled/kuma.infinitymais.com.br-le-ssl.conf:2)
+         port 443 namevhost manager01hetzner.infinitymais.com.br (/etc/apache2/sites-enabled/manager01hetzner.infinitymais.com.br-le-ssl.conf:2)
+                 alias www.manager01hetzner.infinitymais.com.br
+         port 443 namevhost radarenchant.infinitymais.com.br (/etc/apache2/sites-enabled/radarenchant.infinitymais.com.br-le-ssl.conf:2)
+*:80                   is a NameVirtualHost
+         default server animaisfantasticos.infinitymais.com.br (/etc/apache2/sites-enabled/animaisfantasticos.infinitymais.com.br.conf:3)
+         port 80 namevhost animaisfantasticos.infinitymais.com.br (/etc/apache2/sites-enabled/animaisfantasticos.infinitymais.com.br.conf:3)
+         port 80 namevhost grafana.infinitymais.com.br (/etc/apache2/sites-enabled/grafana.infinitymais.com.br.conf:3)
+         port 80 namevhost kuma.infinitymais.com.br (/etc/apache2/sites-enabled/kuma.infinitymais.com.br.conf:3)
+         port 80 namevhost manager01hetzner.infinitymais.com.br (/etc/apache2/sites-enabled/manager01hetzner.infinitymais.com.br.conf:1)
+                 alias www.manager01hetzner.infinitymais.com.br
+         port 80 namevhost radarenchant.infinitymais.com.br (/etc/apache2/sites-enabled/radarenchant.infinitymais.com.br.conf:4)
+ServerRoot: "/etc/apache2"
+Main DocumentRoot: "/var/www/html"
+Main ErrorLog: "/var/log/apache2/error.log"
+Mutex watchdog-callback: using_defaults
+Mutex rewrite-map: using_defaults
+Mutex ssl-stapling-refresh: using_defaults
+Mutex ssl-stapling: using_defaults
+Mutex proxy: using_defaults
+Mutex ssl-cache: using_defaults
+Mutex default: dir="/var/run/apache2/" mechanism=default 
+Mutex mpm-accept: using_defaults
+PidFile: "/var/run/apache2/apache2.pid"
+Define: DUMP_VHOSTS
+Define: DUMP_RUN_CFG
+User: name="www-data" id=33
+Group: name="www-data" id=33
+
+# Certificados
+  Certificate Name: animaisfantasticos.infinitymais.com.br
+    Domains: animaisfantasticos.infinitymais.com.br
+    Expiry Date: 2027-02-16 13:05:21+00:00 (VALID: 89 days)
+  Certificate Name: grafana.infinitymais.com.br
+    Domains: grafana.infinitymais.com.br
+    Expiry Date: 2027-02-16 13:13:23+00:00 (VALID: 89 days)
+  Certificate Name: kuma.infinitymais.com.br
+    Domains: kuma.infinitymais.com.br
+    Expiry Date: 2027-02-16 13:17:13+00:00 (VALID: 89 days)
+  Certificate Name: manager01hetzner.infinitymais.com.br
+    Domains: manager01hetzner.infinitymais.com.br
+    Expiry Date: 2027-02-16 18:06:14+00:00 (VALID: 89 days)
+  Certificate Name: radarenchant.infinitymais.com.br
+    Domains: radarenchant.infinitymais.com.br
+    Expiry Date: 2027-02-16 13:57:14+00:00 (VALID: 89 days)
+
+# Endpoints (código HTTP)
+https://animaisfantasticos.infinitymais.com.br/                200
+https://radarenchant.infinitymais.com.br/                      200
+https://radarenchant.infinitymais.com.br/api/saude             200
+https://grafana.infinitymais.com.br/api/health                 200
+https://kuma.infinitymais.com.br/                              302
+http://animaisfantasticos.infinitymais.com.br/                 301
+
+# Serviços internos
+http://127.0.0.1:8090/                     200
+http://127.0.0.1:8091/                     200
+http://127.0.0.1:9300/api/saude            200
+http://127.0.0.1:9090/-/healthy            200
+http://127.0.0.1:3100/ready                200
+http://127.0.0.1:3000/api/health           200
+
+# TLS do site
+subject=CN = animaisfantasticos.infinitymais.com.br
+issuer=C = US, O = Let's Encrypt, CN = YE1
+notBefore=Nov 18 13:05:22 2026 GMT
+notAfter=Feb 16 13:05:21 2027 GMT

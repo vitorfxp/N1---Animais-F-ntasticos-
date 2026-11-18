@@ -1,0 +1,171 @@
+
+PLAY [Configura o manager1] ****************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [manager1]
+
+TASK [Chave atualizada do repositório sury.org] ********************************
+ok: [manager1]
+
+TASK [Pacotes base] ************************************************************
+ok: [manager1]
+
+TASK [Cron ativo] **************************************************************
+ok: [manager1]
+
+TASK [Docker Engine e Compose] *************************************************
+ok: [manager1]
+
+TASK [Daemon do Docker ativo] **************************************************
+ok: [manager1]
+
+TASK [Serviço do Traefik existe?] **********************************************
+ok: [manager1]
+
+TASK [Traefik em 0 réplica(s)] *************************************************
+ok: [manager1]
+
+TASK [Código presente em /root/projeto] ****************************************
+ok: [manager1]
+
+TASK [Aborta sem o código] *****************************************************
+ok: [manager1] => {
+    "changed": false,
+    "msg": "All assertions passed"
+}
+
+TASK [.dockerignore a partir do dockerignore] **********************************
+ok: [manager1]
+
+TASK [Distribui o .env e o exemplo] ********************************************
+ok: [manager1] => (item=.env)
+ok: [manager1] => (item=.env.example)
+
+TASK [Sobe site e radar] *******************************************************
+ok: [manager1] => (item=)
+ok: [manager1] => (item=radar_enchant)
+
+TASK [Grafana + dirs + scripts] ************************************************
+ok: [manager1]
+
+TASK [Estrutura do monitoramento] **********************************************
+ok: [manager1] => (item={'path': 'textfile'})
+ok: [manager1] => (item={'path': 'geoip'})
+
+TASK [Scripts executáveis] *****************************************************
+ok: [manager1] => (item=docker-state.sh)
+ok: [manager1] => (item=update-geoip.sh)
+ok: [manager1] => (item=trocar-senha-grafana.sh)
+
+TASK [Estado dos containers para o node-exporter] ******************************
+ok: [manager1]
+
+TASK [GeoIP na primeira execução] **********************************************
+ok: [manager1]
+
+TASK [Crons do monitoramento] **************************************************
+ok: [manager1] => (item={'name': 'monitoring-docker-state', 'line': '* * * * * root /root/projeto/monitoring/scripts/docker-state.sh >/dev/null 2>&1'})
+ok: [manager1] => (item={'name': 'monitoring-geoip', 'line': '17 4 3 * * root /root/projeto/monitoring/scripts/update-geoip.sh >/dev/null 2>&1'})
+
+TASK [Renderiza o prometheus.yml] **********************************************
+ok: [manager1]
+
+TASK [Stack de observabilidade] ************************************************
+ok: [manager1]
+
+TASK [Grafana — env, drop-in, datasources e dashboards] ************************
+ok: [manager1] => (item={'src': 'grafana.env', 'dest': '/etc/grafana/projeto.env', 'owner': 'root', 'group': 'root', 'mode': '0600'})
+ok: [manager1] => (item={'src': 'provisioning/datasources/prometheus.yaml', 'dest': '/etc/grafana/provisioning/datasources/prometheus.yaml', 'owner': 'root', 'group': 'grafana', 'mode': '0640'})
+ok: [manager1] => (item={'src': 'provisioning/datasources/loki.yaml', 'dest': '/etc/grafana/provisioning/datasources/loki.yaml', 'owner': 'root', 'group': 'grafana', 'mode': '0640'})
+ok: [manager1] => (item={'src': 'provisioning/dashboards/projeto.yaml', 'dest': '/etc/grafana/provisioning/dashboards/projeto.yaml', 'owner': 'root', 'group': 'grafana', 'mode': '0640'})
+
+TASK [Drop-in do systemd] ******************************************************
+ok: [manager1]
+
+TASK [Diretório dos dashboards] ************************************************
+ok: [manager1]
+
+TASK [Localiza dashboards e imagens] *******************************************
+ok: [manager1] => (item=dashboards)
+ok: [manager1] => (item=assets)
+
+TASK [Copia dashboards e imagens] **********************************************
+ok: [manager1] => (item=6-containers-cadvisor.json)
+ok: [manager1] => (item=4-ambiente.json)
+ok: [manager1] => (item=1-aplicacoes.json)
+ok: [manager1] => (item=2-containers.json)
+ok: [manager1] => (item=0-mapa-de-trafego.json)
+ok: [manager1] => (item=5-host-node-exporter.json)
+ok: [manager1] => (item=3-recursos.json)
+ok: [manager1] => (item=mapa-mundi.jpg)
+ok: [manager1] => (item=mapa-mundi.webp)
+
+TASK [Aplica handlers agora] ***************************************************
+
+TASK [Apache2 + módulos] *******************************************************
+ok: [manager1]
+
+TASK [Habilita módulos] ********************************************************
+ok: [manager1] => (item=proxy)
+ok: [manager1] => (item=proxy_http)
+ok: [manager1] => (item=proxy_wstunnel)
+ok: [manager1] => (item=ssl)
+ok: [manager1] => (item=rewrite)
+ok: [manager1] => (item=headers)
+
+TASK [Portas do Apache (80/443 já no ports.conf)] ******************************
+ok: [manager1] => (item=80)
+ok: [manager1] => (item=8081)
+
+TASK [Renderiza os vhosts] *****************************************************
+ok: [manager1] => (item=animaisfantasticos.infinitymais.com.br)
+ok: [manager1] => (item=radarenchant.infinitymais.com.br)
+ok: [manager1] => (item=grafana.infinitymais.com.br)
+ok: [manager1] => (item=kuma.infinitymais.com.br)
+
+TASK [Vhosts habilitados] ******************************************************
+ok: [manager1] => (item=animaisfantasticos.infinitymais.com.br)
+ok: [manager1] => (item=radarenchant.infinitymais.com.br)
+ok: [manager1] => (item=grafana.infinitymais.com.br)
+ok: [manager1] => (item=kuma.infinitymais.com.br)
+
+TASK [Configuração do Apache válida] *******************************************
+ok: [manager1]
+
+TASK [Apache ativo] ************************************************************
+ok: [manager1]
+
+TASK [Certbot + renovação] *****************************************************
+ok: [manager1]
+
+TASK [Hook de reload após renovar] *********************************************
+ok: [manager1]
+
+TASK [Timer do certbot] ********************************************************
+ok: [manager1]
+
+TASK [Habilita o timer] ********************************************************
+ok: [manager1]
+
+TASK [Cron de renovação (fallback sem timer)] **********************************
+skipping: [manager1]
+
+TASK [Serviços locais] *********************************************************
+ok: [manager1] => (item=http://127.0.0.1:8090/)
+ok: [manager1] => (item=http://127.0.0.1:8091/)
+ok: [manager1] => (item=http://127.0.0.1:9300/api/saude)
+ok: [manager1] => (item=http://127.0.0.1:9090/-/healthy)
+ok: [manager1] => (item=http://127.0.0.1:3100/ready)
+ok: [manager1] => (item=http://127.0.0.1:3000/api/health)
+ok: [manager1] => (item=http://127.0.0.1:3001/)
+
+TASK [Domínios em HTTPS] *******************************************************
+ok: [manager1] => (item=https://animaisfantasticos.infinitymais.com.br/)
+ok: [manager1] => (item=https://radarenchant.infinitymais.com.br/)
+ok: [manager1] => (item=https://radarenchant.infinitymais.com.br/api/saude)
+ok: [manager1] => (item=https://grafana.infinitymais.com.br/api/health)
+ok: [manager1] => (item=https://kuma.infinitymais.com.br/)
+
+PLAY RECAP *********************************************************************
+manager1                   : ok=39   changed=0    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+
