@@ -42,8 +42,8 @@ scrape_configs:
         labels: { app: "laravel_app (:8080)" }
       - targets: ["https://manager01hetzner.infinitymais.com.br/"]
         labels: { app: "Site manager01hetzner (Apache)" }
-      - targets: ["http://127.0.0.1:3001/"]
-        labels: { app: "Uptime Kuma (:3001)" }
+      - targets: ["https://kuma.infinitymais.com.br/"]
+        labels: { app: "Uptime Kuma (kuma.infinitymais.com.br)" }
       - targets: ["https://grafana.infinitymais.com.br/api/health"]
         labels: { app: "Grafana (grafana.infinitymais.com.br)" }
       - targets: ["https://animaisfantasticos.infinitymais.com.br/"]
