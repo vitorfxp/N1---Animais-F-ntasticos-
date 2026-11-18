@@ -1,0 +1,16 @@
+modules:
+  # Considera a aplicação "no ar" se responder qualquer status < 500 (5xx/timeout = indisponível)
+  http_up:
+    prober: http
+    timeout: 10s
+    http:
+      preferred_ip_protocol: ip4
+      follow_redirects: true
+      valid_status_codes: [200, 201, 202, 204, 301, 302, 303, 304, 307, 308, 401, 403, 404]
+      tls_config:
+        insecure_skip_verify: false
+  tcp_up:
+    prober: tcp
+    timeout: 5s
+    tcp:
+      preferred_ip_protocol: ip4

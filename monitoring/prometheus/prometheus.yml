@@ -1,0 +1,61 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["127.0.0.1:9090"]
+
+  - job_name: node
+    static_configs:
+      - targets: ["127.0.0.1:9100"]
+
+  - job_name: cadvisor
+    static_configs:
+      - targets: ["127.0.0.1:8088"]
+
+  - job_name: blackbox
+    static_configs:
+      - targets: ["127.0.0.1:9115"]
+
+  - job_name: grafana
+    static_configs:
+      - targets: ["127.0.0.1:3000"]
+
+  # ---- Disponibilidade das aplicações (HTTP) ----
+  # Para adicionar uma aplicação: inclua uma linha em targets com o nome em "app".
+  - job_name: probe_http
+    metrics_path: /probe
+    params:
+      module: [http_up]
+    static_configs:
+      - targets: ["http://127.0.0.1:8080/"]
+        labels: { app: "laravel_app (:8080)" }
+      - targets: ["https://manager01hetzner.infinitymais.com.br/"]
+        labels: { app: "Site manager01hetzner (Apache)" }
+      - targets: ["http://127.0.0.1:3001/"]
+        labels: { app: "Uptime Kuma (:3001)" }
+      - targets: ["http://127.0.0.1:3000/api/health"]
+        labels: { app: "Grafana (:3000)" }
+    relabel_configs: &probe_relabel
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: 127.0.0.1:9115
+
+  # ---- Disponibilidade de portas (TCP) ----
+  - job_name: probe_tcp
+    metrics_path: /probe
+    params:
+      module: [tcp_up]
+    static_configs:
+      - targets: ["127.0.0.1:5433"]
+        labels: { app: "PostgreSQL 16 host (:5433)" }
+      - targets: ["10.100.0.1:5439"]
+        labels: { app: "postgres-vpn (:5439)" }
+      - targets: ["127.0.0.1:22"]
+        labels: { app: "SSH (:22)" }
+    relabel_configs: *probe_relabel

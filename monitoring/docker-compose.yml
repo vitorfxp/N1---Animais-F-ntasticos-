@@ -1,0 +1,80 @@
+# Stack de monitoramento - coleta de métricas para o Grafana (instalado no host, porta 3000)
+# Tudo em network_mode: host e escutando só em 127.0.0.1 (nada exposto para a internet).
+name: monitoring
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: mon-prometheus
+    network_mode: host
+    restart: unless-stopped
+    user: "65534:65534"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+      - --storage.tsdb.retention.size=5GB
+      - --web.listen-address=127.0.0.1:9090
+      - --web.enable-lifecycle
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    mem_limit: 512m
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: mon-node-exporter
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    command:
+      - --path.rootfs=/host
+      - --web.listen-address=127.0.0.1:9100
+      - --collector.systemd
+      - --collector.systemd.unit-include=(docker|containerd|apache2|postgresql@16-main|php8\.3-fpm|ssh|cron|supervisor|grafana-server|systemd-timesyncd)\.service
+      - --collector.textfile.directory=/textfile
+      - --collector.filesystem.mount-points-exclude=^/(dev|proc|run|sys|var/lib/docker/.+|var/lib/containerd/.+)($$|/)
+    volumes:
+      - /:/host:ro,rslave
+      - /run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
+      - ./textfile:/textfile:ro
+    mem_limit: 128m
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: mon-cadvisor
+    network_mode: host
+    restart: unless-stopped
+    privileged: true
+    command:
+      - --listen_ip=127.0.0.1
+      - --port=8088
+      - --docker_only=true
+      - --housekeeping_interval=15s
+      - --store_container_labels=false
+      - --whitelisted_container_labels=com.docker.compose.project,com.docker.compose.service,com.docker.swarm.service.name
+      - --disable_metrics=percpu,sched,tcp,udp,disk,hugetlb,referenced_memory,cpu_topology,resctrl,process
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    mem_limit: 256m
+
+  blackbox:
+    image: prom/blackbox-exporter:v0.25.0
+    container_name: mon-blackbox
+    network_mode: host
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/blackbox/blackbox.yml
+      - --web.listen-address=127.0.0.1:9115
+    volumes:
+      - ./blackbox/blackbox.yml:/etc/blackbox/blackbox.yml:ro
+    mem_limit: 64m
+
+volumes:
+  prometheus-data:
