@@ -1,0 +1,350 @@
+---
+# manager1 (Debian 12) — Docker Swarm + Apache + monitoramento + Grafana
+- name: Configura o manager1
+  hosts: web
+  become: true
+
+  vars:
+    projeto_dir: /root/projeto
+    env_file: "{{ playbook_dir }}/../.env"
+    dominio_site: animaisfantasticos.infinitymais.com.br
+    dominio_radar: radarenchant.infinitymais.com.br
+    dominio_grafana: grafana.infinitymais.com.br
+    dominio_kuma: kuma.infinitymais.com.br
+    porta_site: 8090
+    porta_radar: 8091
+    porta_api: 9300
+    porta_grafana: 3000
+    porta_kuma: 3001
+    apache_sites: "{{ [dominio_site, dominio_radar, dominio_grafana, dominio_kuma] }}"
+    apache_modulos: [proxy, proxy_http, proxy_wstunnel, ssl, rewrite, headers]
+    traefik_service: traefik_traefik
+    traefik_replicas: 0
+
+  handlers:
+    - name: Recarrega o Apache
+      ansible.builtin.systemd: { name: apache2, state: reloaded }
+    - name: Reinicia o Grafana
+      ansible.builtin.systemd: { name: grafana-server, state: restarted }
+    - name: Reinicia a coleta de logs
+      ansible.builtin.command: docker restart mon-promtail mon-loki
+      changed_when: true
+
+  tasks:
+    # ---------------------------------------------------------------- base
+    # A chave do repositório sury.org (PHP) já expirou uma vez e quebra o apt.
+    - name: Chave atualizada do repositório sury.org
+      ansible.builtin.get_url:
+        url: https://packages.sury.org/php/apt.gpg
+        dest: /etc/apt/trusted.gpg.d/php.gpg
+        mode: "0644"
+
+    - name: Pacotes base
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        name: [git, curl, ca-certificates, python3, python3-requests, jq, cron, rsync, gettext-base]
+
+    - name: Cron ativo
+      ansible.builtin.systemd: { name: cron, enabled: true, state: started }
+
+    # ---------------------------------------------------------------- docker
+    - name: Docker Engine e Compose
+      ansible.builtin.apt:
+        name: [docker.io, docker-compose-plugin]
+        state: present
+
+    - name: Daemon do Docker ativo
+      ansible.builtin.systemd: { name: docker, enabled: true, state: started }
+
+    # O traefik está em crash loop tentando publicar a :443, que é do Apache.
+    - name: Serviço do Traefik existe?
+      ansible.builtin.command: docker service inspect {{ traefik_service }}
+      register: traefik
+      changed_when: false
+      failed_when: false
+
+    - name: Traefik em {{ traefik_replicas }} réplica(s)
+      ansible.builtin.command: docker service scale {{ traefik_service }}={{ traefik_replicas }}
+      register: traefik_scale
+      changed_when: "'updated' in traefik_scale.stdout"
+      when: traefik.rc == 0
+
+    # ---------------------------------------------------------------- site
+    - name: Código presente em {{ projeto_dir }}
+      ansible.builtin.stat:
+        path: "{{ projeto_dir }}/docker-compose.yml"
+      register: projeto
+
+    - name: Aborta sem o código
+      ansible.builtin.assert:
+        that: projeto.stat.exists
+        fail_msg: "{{ projeto_dir }} não existe (o branch radar-observabilidade ainda não está no GitHub)."
+
+    # Sem .dockerignore o build manda .git/ no contexto.
+    - name: .dockerignore a partir do dockerignore
+      ansible.builtin.command:
+        cmd: cp -n dockerignore .dockerignore
+        chdir: "{{ projeto_dir }}"
+        creates: "{{ projeto_dir }}/.dockerignore"
+
+    # Endereços vêm do .env; ele precisa existir no servidor antes dos compose.
+    - name: Distribui o .env e o exemplo
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../{{ item }}"
+        dest: "{{ projeto_dir }}/{{ item }}"
+        mode: "0644"
+      loop: [.env, .env.example]
+      notify: Reinicia a coleta de logs
+
+    - name: Sobe site e radar
+      ansible.builtin.command:
+        cmd: "docker compose --env-file {{ projeto_dir }}/.env up -d --build"
+        chdir: "{{ projeto_dir }}/{{ item }}"
+      register: compose_up
+      changed_when: >-
+        (compose_up.stderr ~ compose_up.stdout) is search('Started|Created|Recreated')
+      loop: ["", "radar_enchant"]
+
+    # ---------------------------------------------------------- monitoring
+    - name: Grafana + dirs + scripts
+      ansible.builtin.apt:
+        name: grafana
+        state: present
+
+    - name: Estrutura do monitoramento
+      ansible.builtin.file:
+        path: "{{ projeto_dir }}/monitoring/{{ item.path }}"
+        state: directory
+        mode: "0755"
+      loop:
+        - { path: textfile }
+        - { path: geoip }
+
+    - name: Scripts executáveis
+      ansible.builtin.file:
+        path: "{{ projeto_dir }}/monitoring/scripts/{{ item }}"
+        mode: "0755"
+      loop: [docker-state.sh, update-geoip.sh, trocar-senha-grafana.sh]
+
+    - name: Estado dos containers para o node-exporter
+      ansible.builtin.command: "{{ projeto_dir }}/monitoring/scripts/docker-state.sh"
+      changed_when: false
+
+    - name: GeoIP na primeira execução
+      ansible.builtin.command: "{{ projeto_dir }}/monitoring/scripts/update-geoip.sh"
+      args:
+        creates: "{{ projeto_dir }}/monitoring/geoip/dbip-city-lite.mmdb"
+
+    - name: Crons do monitoramento
+      ansible.builtin.copy:
+        dest: /etc/cron.d/{{ item.name }}
+        mode: "0644"
+        content: "{{ item.line }}\n"
+      loop:
+        - { name: monitoring-docker-state, line: "* * * * * root {{ projeto_dir }}/monitoring/scripts/docker-state.sh >/dev/null 2>&1" }
+        - { name: monitoring-geoip, line: "17 4 3 * * root {{ projeto_dir }}/monitoring/scripts/update-geoip.sh >/dev/null 2>&1" }
+
+    # Prometheus não expande variáveis: o arquivo é renderizado a partir do .env.
+    - name: Renderiza o prometheus.yml
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: |
+          set -euo pipefail
+          set -a; . "{{ projeto_dir }}/.env"; set +a
+          envsubst < "{{ projeto_dir }}/monitoring/prometheus/prometheus.yml.tmpl" > /tmp/prom.$$
+          if cmp -s /tmp/prom.$$ "{{ projeto_dir }}/monitoring/prometheus/prometheus.yml"; then
+            rm -f /tmp/prom.$$
+          else
+            install -m 0644 /tmp/prom.$$ "{{ projeto_dir }}/monitoring/prometheus/prometheus.yml"
+            rm -f /tmp/prom.$$
+            echo CHANGED
+          fi
+      register: prom_render
+      changed_when: "'CHANGED' in prom_render.stdout"
+
+    - name: Stack de observabilidade
+      ansible.builtin.command:
+        cmd: docker compose --env-file {{ projeto_dir }}/.env up -d --remove-orphans
+        chdir: "{{ projeto_dir }}/monitoring"
+      register: mon_up
+      changed_when: >-
+        (mon_up.stderr ~ mon_up.stdout) is search('Started|Created|Recreated')
+
+    - name: Grafana — env, drop-in, datasources e dashboards
+      ansible.builtin.copy:
+        src: "{{ projeto_dir }}/monitoring/grafana/{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: "{{ item.owner }}"
+        group: "{{ item.group }}"
+        mode: "{{ item.mode }}"
+        remote_src: true
+      loop:
+        - { src: grafana.env, dest: /etc/grafana/projeto.env, owner: root, group: root, mode: "0600" }
+        - { src: provisioning/datasources/prometheus.yaml, dest: /etc/grafana/provisioning/datasources/prometheus.yaml, owner: root, group: grafana, mode: "0640" }
+        - { src: provisioning/datasources/loki.yaml, dest: /etc/grafana/provisioning/datasources/loki.yaml, owner: root, group: grafana, mode: "0640" }
+        - { src: provisioning/dashboards/projeto.yaml, dest: /etc/grafana/provisioning/dashboards/projeto.yaml, owner: root, group: grafana, mode: "0640" }
+      notify: Reinicia o Grafana
+
+    - name: Drop-in do systemd
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/grafana-server.service.d/projeto.conf
+        mode: "0644"
+        content: |
+          [Service]
+          EnvironmentFile=/etc/grafana/projeto.env
+      notify:
+        - Recarrega o systemd
+        - Reinicia o Grafana
+
+    - name: Diretório dos dashboards
+      ansible.builtin.file:
+        path: /var/lib/grafana/dashboards/projeto
+        state: directory
+        owner: grafana
+        group: grafana
+        mode: "0755"
+
+    - name: Localiza dashboards e imagens
+      ansible.builtin.find:
+        paths: "{{ projeto_dir }}/monitoring/grafana/{{ item }}"
+        patterns: "*"
+        file_type: file
+      register: grafana_files
+      loop: [dashboards, assets]
+
+    - name: Copia dashboards e imagens
+      ansible.builtin.copy:
+        src: "{{ item.1.path }}"
+        dest: "{{ '/var/lib/grafana/dashboards/projeto' if item.0.item == 'dashboards' else '/usr/share/grafana/public/img' }}/{{ item.1.path | basename }}"
+        owner: "{{ 'grafana' if item.0.item == 'dashboards' else 'root' }}"
+        group: "{{ 'grafana' if item.0.item == 'dashboards' else 'root' }}"
+        mode: "0644"
+        remote_src: true
+      loop: "{{ grafana_files.results | subelements('files') }}"
+      loop_control:
+        label: "{{ item.1.path | basename }}"
+      notify: Reinicia o Grafana
+
+    - name: Aplica handlers agora
+      ansible.builtin.meta: flush_handlers
+
+    # -------------------------------------------------------------- apache
+    - name: Apache2 + módulos
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+
+    - name: Habilita módulos
+      ansible.builtin.command:
+        cmd: a2enmod {{ item }}
+        creates: /etc/apache2/mods-enabled/{{ item }}.load
+      loop: "{{ apache_modulos }}"
+      notify: Recarrega o Apache
+
+    - name: Portas do Apache (80/443 já no ports.conf)
+      ansible.builtin.lineinfile:
+        path: /etc/apache2/ports.conf
+        line: "Listen {{ item }}"
+      loop: [80, 8081]
+      notify: Recarrega o Apache
+
+    # Os vhosts usam ${LOCAL_HOST}; renderiza a partir do .env.
+    - name: Renderiza os vhosts
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: |
+          set -euo pipefail
+          set -a; . "{{ projeto_dir }}/.env"; set +a
+          envsubst < "{{ projeto_dir }}/monitoring/apache/{{ item }}.conf" > /tmp/vh.$$
+          if cmp -s /tmp/vh.$$ "/etc/apache2/sites-available/{{ item }}.conf"; then
+            rm -f /tmp/vh.$$
+          else
+            install -m 0644 /tmp/vh.$$ "/etc/apache2/sites-available/{{ item }}.conf"
+            rm -f /tmp/vh.$$
+            echo CHANGED
+          fi
+      register: vhost_render
+      changed_when: "'CHANGED' in vhost_render.stdout"
+      loop: "{{ apache_sites }}"
+      notify: Recarrega o Apache
+
+    - name: Vhosts habilitados
+      ansible.builtin.command:
+        cmd: a2ensite {{ item }}
+        creates: /etc/apache2/sites-enabled/{{ item }}.conf
+      loop: "{{ apache_sites }}"
+      notify: Recarrega o Apache
+
+    - name: Configuração do Apache válida
+      ansible.builtin.command: apache2ctl configtest
+      changed_when: false
+
+    - name: Apache ativo
+      ansible.builtin.systemd: { name: apache2, enabled: true, state: started }
+
+    # ----------------------------------------------------------------- tls
+    - name: Certbot + renovação
+      ansible.builtin.apt:
+        name: [certbot, python3-certbot-apache]
+        state: present
+
+    - name: Hook de reload após renovar
+      ansible.builtin.copy:
+        dest: /etc/letsencrypt/renewal-hooks/deploy/reload-apache.sh
+        mode: "0755"
+        content: |
+          #!/bin/sh
+          systemctl reload apache2
+
+    - name: Timer do certbot
+      ansible.builtin.stat:
+        path: /lib/systemd/system/certbot.timer
+      register: certbot_timer
+
+    - name: Habilita o timer
+      ansible.builtin.systemd: { name: certbot.timer, enabled: true, state: started }
+      when: certbot_timer.stat.exists
+
+    - name: Cron de renovação (fallback sem timer)
+      ansible.builtin.copy:
+        dest: /etc/cron.d/certbot-renew
+        mode: "0644"
+        content: |
+          17 3 * * * root certbot renew --quiet --deploy-hook "systemctl reload apache2"
+      when: not certbot_timer.stat.exists
+
+    # -------------------------------------------------------------- verify
+    - name: Serviços locais
+      ansible.builtin.uri:
+        url: "{{ item }}"
+        status_code: 200
+      register: local
+      retries: 12
+      delay: 5
+      until: local.status == 200
+      changed_when: false
+      loop:
+        - "http://127.0.0.1:{{ porta_site }}/"
+        - "http://127.0.0.1:{{ porta_radar }}/"
+        - "http://127.0.0.1:{{ porta_api }}/api/saude"
+        - "http://127.0.0.1:9090/-/healthy"
+        - "http://127.0.0.1:3100/ready"
+        - "http://127.0.0.1:{{ porta_grafana }}/api/health"
+        - "http://127.0.0.1:{{ porta_kuma }}/"
+
+    - name: Domínios em HTTPS
+      ansible.builtin.uri:
+        url: "{{ item }}"
+        status_code: 200
+      register: public
+      retries: 3
+      delay: 3
+      until: public.status == 200
+      changed_when: false
+      loop:
+        - "https://{{ dominio_site }}/"
+        - "https://{{ dominio_radar }}/"
+        - "https://{{ dominio_radar }}/api/saude"
+        - "https://{{ dominio_grafana }}/api/health"
+        - "https://{{ dominio_kuma }}/"

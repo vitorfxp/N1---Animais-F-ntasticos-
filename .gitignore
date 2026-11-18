@@ -1,0 +1,5 @@
+.env
+monitoring/prometheus/prometheus.yml
+*.log
+.DS_Store
+Thumbs.db

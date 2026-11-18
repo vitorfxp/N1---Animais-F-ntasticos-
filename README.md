@@ -481,6 +481,40 @@ O que muda em produção, na prática:
 | `ERR_CONNECTION_REFUSED`                     | porta fechada ou serviço parado     | `ss -tulnp`, status do Docker |
 | Certificado inválido                         | certresolver falhou                 | `docker logs traefik`, validar e-mail/DNS |
 
+### 13.1 Observabilidade completa (Radar)
+
+Além do Uptime Kuma, o servidor tem uma stack de observabilidade versionada em [`monitoring/`](monitoring/),
+seguindo a base do [Tamoai-Infra](https://github.com/guisosi/Tamoai-Infra):
+
+| Endereço | O que é |
+|---|---|
+| <https://animaisfantasticos.infinitymais.com.br> | Site Animais Fantásticos (raiz do repositório) |
+| <https://radarenchant.infinitymais.com.br> | **Radar** ([`radar_enchant/`](radar_enchant/)): globo 3D com o tráfego chegando ao servidor ao vivo (acessos HTTP em azul, tentativas de SSH em vermelho) |
+| <https://grafana.infinitymais.com.br> | Grafana (com login): mapa de tráfego, host, containers, disponibilidade e falhas do ambiente |
+| <https://kuma.infinitymais.com.br> | Uptime Kuma (com login) |
+
+| Componente | Função |
+|---|---|
+| Prometheus + node-exporter + cAdvisor | métricas do host e dos containers (15 dias) |
+| blackbox-exporter | checa HTTP/TCP dos sites, do Grafana, do Kuma, do Postgres e do SSH |
+| Loki + Promtail + GeoIP (DB-IP Lite) | logs de acesso do Apache e tentativas de SSH com país/cidade (7 dias) |
+| `traffic-api` | API pública e **anônima** usada pelo site (sem IP, usuário ou caminho) |
+| Grafana (no host, `127.0.0.1:3000`) | configurado como código em `monitoring/grafana/grafana.env` e `provisioning/` |
+
+**Dashboards (pasta "Radar" no Grafana):** Mapa de tráfego (adaptado do "Nimbus" da base), Host (Node Exporter Full),
+Containers (cAdvisor), Aplicações, Containers parados, Recursos e Ambiente. Os JSON são gerados por
+`monitoring/grafana/gen_base.py` e `gen_dashboards.py`.
+
+**Subir/atualizar no servidor:**
+
+```bash
+cd /root/projeto && docker compose up -d --build                # Animais Fantásticos (127.0.0.1:8090)
+cd /root/projeto/radar_enchant && docker compose up -d --build  # Radar (127.0.0.1:8091)
+bash /root/projeto/monitoring/deploy.sh            # stack de observabilidade + Grafana
+```
+
+Os vhosts do Apache (proxy + HTTPS via certbot) ficam em `monitoring/apache/`.
+
 ---
 
 ## 14. Segurança
@@ -638,7 +672,7 @@ docker network inspect traefik                                # os dois estão n
 ### 17.4 Problema de DNS
 
 ```bash
-dig manager01hetzner.infinitymais.com.br +short   # resolve para 178.156.193.212?
+dig manager01hetzner.infinitymais.com.br +short   # resolve para o SERVER_IP do .env?
 ```
 
 Se resolver para o IP errado → corrigir o registro A e aguardar o TTL. Se não resolver → verificar

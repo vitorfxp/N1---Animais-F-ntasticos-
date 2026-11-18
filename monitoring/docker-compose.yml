@@ -1,0 +1,142 @@
+# Stack de monitoramento - coleta de métricas para o Grafana (instalado no host, porta 3000)
+# Tudo em network_mode: host e escutando só em ${LOCAL_HOST} (nada exposto para a internet).
+name: monitoring
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: mon-prometheus
+    network_mode: host
+    restart: unless-stopped
+    user: "65534:65534"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+      - --storage.tsdb.retention.size=5GB
+      - --web.listen-address=${LOCAL_HOST}:9090
+      - --web.enable-lifecycle
+    volumes:
+      - ./prometheus:/etc/prometheus:ro
+      - prometheus-data:/prometheus
+    mem_limit: 512m
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: mon-node-exporter
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    command:
+      - --path.rootfs=/host
+      - --web.listen-address=${LOCAL_HOST}:9100
+      - --collector.systemd
+      - --collector.systemd.unit-include=(docker|containerd|apache2|postgresql@16-main|php8\.3-fpm|ssh|cron|supervisor|grafana-server|systemd-timesyncd)\.service
+      - --collector.textfile.directory=/textfile
+      - --collector.filesystem.mount-points-exclude=^/(dev|proc|run|sys|var/lib/docker/.+|var/lib/containerd/.+)($$|/)
+    volumes:
+      - /:/host:ro,rslave
+      - /run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket:ro
+      - ./textfile:/textfile:ro
+    mem_limit: 128m
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: mon-cadvisor
+    network_mode: host
+    restart: unless-stopped
+    privileged: true
+    command:
+      - --listen_ip=${LOCAL_HOST}
+      - --port=8088
+      - --docker_only=true
+      - --housekeeping_interval=15s
+      - --store_container_labels=false
+      - --whitelisted_container_labels=com.docker.compose.project,com.docker.compose.service,com.docker.swarm.service.name
+      - --disable_metrics=percpu,sched,tcp,udp,disk,hugetlb,referenced_memory,cpu_topology,resctrl,process
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://${LOCAL_HOST}:8088/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    mem_limit: 256m
+
+  blackbox:
+    image: prom/blackbox-exporter:v0.25.0
+    container_name: mon-blackbox
+    network_mode: host
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/blackbox/blackbox.yml
+      - --web.listen-address=${LOCAL_HOST}:9115
+    volumes:
+      - ./blackbox:/etc/blackbox:ro
+    mem_limit: 64m
+
+  # ---------------- Logs (mesma base do Tamoai-Infra: Loki + Promtail + GeoIP)
+  loki:
+    image: grafana/loki:3.6.11
+    container_name: mon-loki
+    network_mode: host
+    restart: unless-stopped
+    user: "10001:10001"
+    command: -config.file=/etc/loki/loki-config.yaml -config.expand-env=true
+    environment:
+      LOCAL_HOST: ${LOCAL_HOST}
+    volumes:
+      - ./loki:/etc/loki:ro
+      - loki-data:/loki
+    mem_limit: 512m
+
+  promtail:
+    image: grafana/promtail:3.6.11
+    container_name: mon-promtail
+    network_mode: host
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/promtail-config.yaml -config.expand-env=true
+    environment:
+      LOCAL_HOST: ${LOCAL_HOST}
+      SERVER_IP: ${SERVER_IP}
+    volumes:
+      - ./promtail:/etc/promtail:ro
+      - ./geoip:/geoip:ro
+      - /var/log/apache2:/var/log/apache2:ro
+      - /var/log/journal:/var/log/journal:ro
+      - /run/log/journal:/run/log/journal:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - promtail-positions:/positions
+    depends_on: [loki]
+    mem_limit: 192m
+
+  # API pública e anônima para o site do mapa (proxy do Apache em /api/)
+  trafego-api:
+    image: python:3.12-alpine
+    container_name: mon-trafego-api
+    network_mode: host
+    restart: unless-stopped
+    user: "65534:65534"
+    command: python -u /app/app.py
+    environment:
+      LOKI_URL: http://${LOCAL_HOST}:3100
+      LISTEN: ${LOCAL_HOST}:9300
+      SERVER_NAME: ${SERVER_NAME}
+      SERVER_CITY: ${SERVER_CITY}
+      SERVER_LAT: ${SERVER_LAT}
+      SERVER_LON: ${SERVER_LON}
+    volumes:
+      - ./traffic-api:/app:ro
+    depends_on: [loki]
+    mem_limit: 128m
+
+volumes:
+  prometheus-data:
+  loki-data:
+  promtail-positions:

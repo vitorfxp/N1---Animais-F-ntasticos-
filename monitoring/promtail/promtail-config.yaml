@@ -1,0 +1,108 @@
+# Promtail: logs de acesso do Apache + tentativas de SSH (journald), com GeoIP.
+# Labels = baixa cardinalidade. Cidade/lat/long/status ficam em structured metadata (Loki 3.x).
+server:
+  http_listen_address: ${LOCAL_HOST}
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /positions/positions.yaml
+
+clients:
+  - url: http://${LOCAL_HOST}:3100/loki/api/v1/push
+
+scrape_configs:
+  # ------------------------------------------------------------------ HTTP (Apache)
+  - job_name: apache
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: apache
+          __path__: /var/log/apache2/*access.log
+    pipeline_stages:
+      # other_vhosts_access.log tem "vhost:porta " na frente; os demais não.
+      - regex:
+          expression: '^(?:(?P<vhost>\S+):\d+ )?(?P<client_ip>\S+) \S+ \S+ \[(?P<ts>[^\]]+)\] "(?P<method>\S*)(?: (?P<path>\S+))?[^"]*" (?P<status>\d{3}) (?P<bytes>\S+)(?: "[^"]*" "(?P<ua>[^"]*)")?'
+      - regex:
+          source: filename
+          expression: '/var/log/apache2/(?P<file_vhost>.+)-access\.log$'
+      - template:
+          source: vhost
+          template: '{{ if .vhost }}{{ regexReplaceAll "^[0-9.]+$" .vhost "acesso-direto-pelo-ip" }}{{ else if .file_vhost }}{{ .file_vhost }}{{ else }}padrao{{ end }}'
+      - template:
+          source: status_class
+          template: '{{ if .status }}{{ regexReplaceAll "^([0-9])[0-9][0-9]$" .status "${1}xx" }}{{ else }}desconhecido{{ end }}'
+      # tráfego interno (sondas do próprio monitoramento, localhost, redes privadas) não entra
+      - drop:
+          source: client_ip
+          expression: '^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|::1$|${SERVER_IP}$)'
+      - timestamp:
+          source: ts
+          format: '02/Jan/2006:15:04:05 -0700'
+      - geoip:
+          db: /geoip/dbip-city-lite.mmdb
+          db_type: city
+          source: client_ip
+      - labels:
+          vhost:
+          status_class:
+          geoip_country_name:
+          geoip_country_code:
+          geoip_continent_code:
+      - structured_metadata:
+          status:
+          method:
+          geoip_city_name:
+          geoip_location_latitude:
+          geoip_location_longitude:
+      - labeldrop: [filename]
+
+  # ------------------------------------------------------------------ SSH (journald)
+  - job_name: ssh
+    journal:
+      path: /var/log/journal
+      max_age: 12h
+      labels:
+        job: ssh
+    relabel_configs:
+      - source_labels: ['__journal__systemd_unit']
+        regex: 'ssh\.service'
+        action: keep
+    pipeline_stages:
+      # Só eventos de autenticação. Um evento = uma tentativa.
+      - match:
+          selector: '{job="ssh"} !~ "Failed password for|Connection closed by (invalid|authenticating) user|Accepted (password|publickey|keyboard-interactive)"'
+          action: drop
+      - match:
+          selector: '{job="ssh"} |~ "Failed password for"'
+          stages:
+            - regex:
+                expression: 'Failed password for (?:invalid user )?(?P<ssh_user>\S*) from (?P<client_ip>[0-9a-fA-F:.]+)'
+            - static_labels:
+                result: falha
+      - match:
+          selector: '{job="ssh"} |~ "Connection closed by (invalid|authenticating) user"'
+          stages:
+            - regex:
+                expression: 'Connection closed by (?:invalid|authenticating) user (?P<ssh_user>\S*) ?(?P<client_ip>[0-9a-fA-F:.]+) port'
+            - static_labels:
+                result: falha
+      - match:
+          selector: '{job="ssh"} |~ "Accepted (password|publickey|keyboard-interactive)"'
+          stages:
+            - regex:
+                expression: 'Accepted \S+ for (?P<ssh_user>\S+) from (?P<client_ip>[0-9a-fA-F:.]+)'
+            - static_labels:
+                result: sucesso
+      - geoip:
+          db: /geoip/dbip-city-lite.mmdb
+          db_type: city
+          source: client_ip
+      - labels:
+          geoip_country_name:
+          geoip_country_code:
+          geoip_continent_code:
+      - structured_metadata:
+          geoip_city_name:
+          geoip_location_latitude:
+          geoip_location_longitude:

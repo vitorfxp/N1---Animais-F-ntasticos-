@@ -1,0 +1,12 @@
+apiVersion: 1
+providers:
+  - name: projeto-monitoramento
+    folder: Radar
+    type: file
+    disableDeletion: false
+    allowUiUpdates: true
+    updateIntervalSeconds: 30
+    options:
+      # cópia feita pelo deploy.sh a partir de /root/projeto/monitoring/grafana/dashboards
+      # (o usuário grafana não tem acesso a /root)
+      path: /var/lib/grafana/dashboards/projeto

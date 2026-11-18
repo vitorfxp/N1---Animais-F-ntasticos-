@@ -1,0 +1,75 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: prometheus
+    static_configs:
+      - targets: ["${LOCAL_HOST}:9090"]
+
+  - job_name: node
+    static_configs:
+      - targets: ["${LOCAL_HOST}:9100"]
+
+  - job_name: cadvisor
+    static_configs:
+      - targets: ["${LOCAL_HOST}:8088"]
+
+  - job_name: blackbox
+    static_configs:
+      - targets: ["${LOCAL_HOST}:9115"]
+
+  - job_name: grafana
+    static_configs:
+      - targets: ["${LOCAL_HOST}:3000"]
+
+  - job_name: loki
+    static_configs:
+      - targets: ["${LOCAL_HOST}:3100"]
+
+  - job_name: promtail
+    static_configs:
+      - targets: ["${LOCAL_HOST}:9080"]
+
+  # ---- Disponibilidade das aplicações (HTTP) ----
+  # Para adicionar uma aplicação: inclua uma linha em targets com o nome em "app".
+  - job_name: probe_http
+    metrics_path: /probe
+    params:
+      module: [http_up]
+    static_configs:
+      - targets: ["http://${LOCAL_HOST}:8080/"]
+        labels: { app: "laravel_app (:8080)" }
+      - targets: ["https://manager01hetzner.infinitymais.com.br/"]
+        labels: { app: "Site manager01hetzner (Apache)" }
+      - targets: ["https://kuma.infinitymais.com.br/"]
+        labels: { app: "Uptime Kuma (kuma.infinitymais.com.br)" }
+      - targets: ["https://grafana.infinitymais.com.br/api/health"]
+        labels: { app: "Grafana (grafana.infinitymais.com.br)" }
+      - targets: ["https://animaisfantasticos.infinitymais.com.br/"]
+        labels: { app: "Site Animais Fantásticos" }
+      - targets: ["https://radarenchant.infinitymais.com.br/"]
+        labels: { app: "Radar (radarenchant)" }
+      - targets: ["https://radarenchant.infinitymais.com.br/api/saude"]
+        labels: { app: "API do Radar" }
+    relabel_configs: &probe_relabel
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: ${LOCAL_HOST}:9115
+
+  # ---- Disponibilidade de portas (TCP) ----
+  - job_name: probe_tcp
+    metrics_path: /probe
+    params:
+      module: [tcp_up]
+    static_configs:
+      - targets: ["${LOCAL_HOST}:5433"]
+        labels: { app: "PostgreSQL 16 host (:5433)" }
+      - targets: ["${POSTGRES_VPN_IP}:${POSTGRES_VPN_PORT}"]
+        labels: { app: "postgres-vpn (:${POSTGRES_VPN_PORT})" }
+      - targets: ["${LOCAL_HOST}:22"]
+        labels: { app: "SSH (:22)" }
+    relabel_configs: *probe_relabel
