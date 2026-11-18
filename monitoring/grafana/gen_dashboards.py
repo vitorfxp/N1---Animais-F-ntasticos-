@@ -7,7 +7,8 @@ import os
 DS = {"type": "prometheus", "uid": "prometheus"}
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dashboards")
 
-GREEN, ORANGE, RED, BLUE = "green", "orange", "red", "blue"
+# paleta do Radar (igual ao site e aos dashboards da base)
+GREEN, ORANGE, RED, BLUE = "#1F9D55", "#F5A623", "#E5303B", "#3E63DD"
 
 
 class Layout:
@@ -154,12 +155,14 @@ def col_override(name, unit=None, mappings=None, th=None, cell="color-background
 
 def dashboard(uid, title, panels, tags, refresh="30s", time_from="now-6h", desc=""):
     return {
-        "uid": uid, "title": title, "description": desc, "tags": ["monitoramento"] + tags,
+        "uid": uid, "title": "Radar | " + title, "description": desc, "tags": ["radar", "monitoramento"] + tags,
         "timezone": "browser", "schemaVersion": 39, "version": 1, "editable": True,
         "refresh": refresh, "time": {"from": time_from, "to": "now"},
         "graphTooltip": 1, "panels": panels, "templating": {"list": []}, "annotations": {"list": []},
-        "links": [{"type": "dashboards", "tags": ["monitoramento"], "asDropdown": False,
-                   "title": "Monitoramento", "includeVars": False, "keepTime": True}],
+        "links": [{"type": "dashboards", "tags": ["radar"], "asDropdown": True,
+                   "title": "Radar", "includeVars": False, "keepTime": True},
+                  {"type": "link", "title": "Site ao vivo", "url": "https://animaisfantasticos.infinitymais.com.br",
+                   "targetBlank": True, "icon": "external link", "tags": []}],
     }
 
 
@@ -205,7 +208,7 @@ def apps():
             col_override("Resposta", unit="s", cell="auto"),
             col_override("HTTP", cell="auto"),
         ], h=9, desc="Alvo checado = coluna instance (oculta)."))
-    return dashboard("mon-apps", "1. Aplicações - Disponibilidade", P, ["aplicacoes"],
+    return dashboard("mon-apps", "1. Aplicações", P, ["aplicacoes"],
                      desc="Aplicação indisponível: checagens HTTP/TCP do blackbox exporter.")
 
 
@@ -270,7 +273,7 @@ def containers():
                                                   -1: ("sem healthcheck", "text")}),
                          th=thresholds((None, "transparent"), (0, RED), (1, GREEN))),
         ], h=7, sort=("Rodando", False)))
-    return dashboard("mon-containers", "2. Containers - Parados e saúde", P, ["containers"],
+    return dashboard("mon-containers", "2. Containers", P, ["containers"],
                      desc="Container parado, réplicas faltando, restarts e consumo por container.")
 
 
@@ -339,7 +342,7 @@ def resources():
     P.append(ts(L, "Top 5 containers - memória", [
         tgt('topk(5, sum by (name) (container_memory_working_set_bytes{name!=""}))', "{{name}}")],
         unit="bytes", fill=0))
-    return dashboard("mon-resources", "3. Recursos do servidor", P, ["recursos"],
+    return dashboard("mon-resources", "3. Recursos", P, ["recursos"],
                      desc="CPU, memória, disco, rede, OOM e pressão de recursos.")
 
 
@@ -401,7 +404,7 @@ def environment():
     ], unit="pps", fill=0))
     P.append(ts(L, "Desvio do relógio", [tgt("node_timex_offset_seconds", "offset")], unit="s", fill=0,
                 th=thresholds((None, GREEN), (0.5, RED))))
-    return dashboard("mon-env", "4. Ambiente - Falhas básicas", P, ["ambiente"],
+    return dashboard("mon-env", "4. Ambiente", P, ["ambiente"],
                      desc="Serviços do sistema, coletores, NTP, reboot, disco read-only, limites do kernel.")
 
 

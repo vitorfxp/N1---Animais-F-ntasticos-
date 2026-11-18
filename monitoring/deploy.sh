@@ -1,23 +1,37 @@
 #!/bin/bash
-# Sobe/atualiza a stack de monitoramento e liga o Grafana do host a ela.
+# Sobe/atualiza a stack de observabilidade e liga o Grafana do host a ela.
 # Uso: bash /root/projeto/monitoring/deploy.sh
 set -euo pipefail
 cd "$(dirname "$0")"
 BASE="$(pwd)"
 
-mkdir -p textfile
-chmod +x scripts/docker-state.sh
+mkdir -p textfile geoip
+chmod +x scripts/*.sh
 bash scripts/docker-state.sh
 
-# Cron: estado dos containers a cada minuto
+# GeoIP (DB-IP City Lite) - baixa na primeira vez
+[ -s geoip/dbip-city-lite.mmdb ] || bash scripts/update-geoip.sh
+
+# Crons: estado dos containers (1/min) e GeoIP (todo dia 3)
 echo "* * * * * root $BASE/scripts/docker-state.sh >/dev/null 2>&1" > /etc/cron.d/monitoring-docker-state
-chmod 644 /etc/cron.d/monitoring-docker-state
+echo "17 4 3 * * root $BASE/scripts/update-geoip.sh >/dev/null 2>&1" > /etc/cron.d/monitoring-geoip
+chmod 644 /etc/cron.d/monitoring-docker-state /etc/cron.d/monitoring-geoip
 
-docker compose up -d
+docker compose up -d --remove-orphans
 
-# Provisionamento do Grafana (datasource + dashboards).
-# Os JSON ficam versionados aqui e são copiados para uma pasta que o usuário grafana consegue ler.
-install -m 644 grafana/provisioning/datasources/prometheus.yaml /etc/grafana/provisioning/datasources/prometheus.yaml
+# ---------------- Grafana (instalado no host via apt)
+# Configuração como código, igual à base do Tamoai-Infra (variáveis GF_*).
+install -d /etc/systemd/system/grafana-server.service.d
+install -m 600 grafana/grafana.env /etc/grafana/projeto.env
+cat > /etc/systemd/system/grafana-server.service.d/projeto.conf <<'EOF'
+[Service]
+EnvironmentFile=/etc/grafana/projeto.env
+EOF
+systemctl daemon-reload
+
+# Provisionamento: datasources + dashboards. Os JSON ficam versionados aqui e são copiados
+# para uma pasta que o usuário grafana consegue ler (ele não tem acesso a /root).
+install -m 644 grafana/provisioning/datasources/*.yaml /etc/grafana/provisioning/datasources/
 install -m 644 grafana/provisioning/dashboards/projeto.yaml /etc/grafana/provisioning/dashboards/projeto.yaml
 install -d -o grafana -g grafana -m 755 /var/lib/grafana/dashboards/projeto
 rm -f /var/lib/grafana/dashboards/projeto/*.json

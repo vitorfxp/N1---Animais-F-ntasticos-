@@ -1,8 +1,9 @@
 {
   "uid": "mon-apps",
-  "title": "1. Aplicações - Disponibilidade",
+  "title": "Radar | 1. Aplicações",
   "description": "Aplicação indisponível: checagens HTTP/TCP do blackbox exporter.",
   "tags": [
+    "radar",
     "monitoramento",
     "aplicacoes"
   ],
@@ -67,11 +68,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 1,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -135,7 +136,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "blue"
+                "color": "#3E63DD"
               }
             ]
           },
@@ -199,15 +200,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 0.99,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 0.999,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -272,15 +273,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 7,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 21,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -345,12 +346,12 @@
               "options": {
                 "1": {
                   "text": "NO AR",
-                  "color": "green",
+                  "color": "#1F9D55",
                   "index": 0
                 },
                 "0": {
                   "text": "FORA",
-                  "color": "red",
+                  "color": "#E5303B",
                   "index": 1
                 }
               }
@@ -361,11 +362,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 1,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -441,12 +442,12 @@
               "options": {
                 "1": {
                   "text": "NO AR",
-                  "color": "green",
+                  "color": "#1F9D55",
                   "index": 0
                 },
                 "0": {
                   "text": "FORA",
-                  "color": "red",
+                  "color": "#E5303B",
                   "index": 1
                 }
               }
@@ -460,11 +461,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 1,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -541,15 +542,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 2,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 5,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           }
@@ -625,7 +626,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -807,12 +808,12 @@
                     "options": {
                       "1": {
                         "text": "NO AR",
-                        "color": "green",
+                        "color": "#1F9D55",
                         "index": 0
                       },
                       "0": {
                         "text": "FORA",
-                        "color": "red",
+                        "color": "#E5303B",
                         "index": 1
                       }
                     }
@@ -826,11 +827,11 @@
                   "steps": [
                     {
                       "value": null,
-                      "color": "red"
+                      "color": "#E5303B"
                     },
                     {
                       "value": 1,
-                      "color": "green"
+                      "color": "#1F9D55"
                     }
                   ]
                 }
@@ -867,15 +868,15 @@
                   "steps": [
                     {
                       "value": null,
-                      "color": "red"
+                      "color": "#E5303B"
                     },
                     {
                       "value": 0.99,
-                      "color": "orange"
+                      "color": "#F5A623"
                     },
                     {
                       "value": 0.999,
-                      "color": "green"
+                      "color": "#1F9D55"
                     }
                   ]
                 }
@@ -916,15 +917,15 @@
                   "steps": [
                     {
                       "value": null,
-                      "color": "red"
+                      "color": "#E5303B"
                     },
                     {
                       "value": 0.99,
-                      "color": "orange"
+                      "color": "#F5A623"
                     },
                     {
                       "value": 0.999,
-                      "color": "green"
+                      "color": "#1F9D55"
                     }
                   ]
                 }
@@ -965,15 +966,15 @@
                   "steps": [
                     {
                       "value": null,
-                      "color": "red"
+                      "color": "#E5303B"
                     },
                     {
                       "value": 0.99,
-                      "color": "orange"
+                      "color": "#F5A623"
                     },
                     {
                       "value": 0.999,
-                      "color": "green"
+                      "color": "#1F9D55"
                     }
                   ]
                 }
@@ -1042,12 +1043,20 @@
     {
       "type": "dashboards",
       "tags": [
-        "monitoramento"
+        "radar"
       ],
-      "asDropdown": false,
-      "title": "Monitoramento",
+      "asDropdown": true,
+      "title": "Radar",
       "includeVars": false,
       "keepTime": true
+    },
+    {
+      "type": "link",
+      "title": "Site ao vivo",
+      "url": "https://animaisfantasticos.infinitymais.com.br",
+      "targetBlank": true,
+      "icon": "external link",
+      "tags": []
     }
   ]
 }

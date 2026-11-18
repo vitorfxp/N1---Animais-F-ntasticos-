@@ -1,8 +1,9 @@
 {
   "uid": "mon-env",
-  "title": "4. Ambiente - Falhas básicas",
+  "title": "Radar | 4. Ambiente",
   "description": "Serviços do sistema, coletores, NTP, reboot, disco read-only, limites do kernel.",
   "tags": [
+    "radar",
     "monitoramento",
     "ambiente"
   ],
@@ -67,11 +68,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 1,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -135,11 +136,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 1,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -203,11 +204,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 1,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -271,12 +272,12 @@
               "options": {
                 "1": {
                   "text": "SIM",
-                  "color": "green",
+                  "color": "#1F9D55",
                   "index": 0
                 },
                 "0": {
                   "text": "NÃO",
-                  "color": "red",
+                  "color": "#E5303B",
                   "index": 1
                 }
               }
@@ -287,11 +288,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 1,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -355,11 +356,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 3600,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -424,15 +425,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 86400,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 604800,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -497,12 +498,12 @@
               "options": {
                 "1": {
                   "text": "ATIVO",
-                  "color": "green",
+                  "color": "#1F9D55",
                   "index": 0
                 },
                 "0": {
                   "text": "FALHOU / PARADO",
-                  "color": "red",
+                  "color": "#E5303B",
                   "index": 1
                 }
               }
@@ -513,11 +514,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 1,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -581,12 +582,12 @@
               "options": {
                 "1": {
                   "text": "NO AR",
-                  "color": "green",
+                  "color": "#1F9D55",
                   "index": 0
                 },
                 "0": {
                   "text": "FORA",
-                  "color": "red",
+                  "color": "#E5303B",
                   "index": 1
                 }
               }
@@ -597,11 +598,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 1,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -665,12 +666,12 @@
               "options": {
                 "1": {
                   "text": "NO AR",
-                  "color": "green",
+                  "color": "#1F9D55",
                   "index": 0
                 },
                 "0": {
                   "text": "FORA",
-                  "color": "red",
+                  "color": "#E5303B",
                   "index": 1
                 }
               }
@@ -681,11 +682,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 1,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -749,11 +750,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 1,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -831,15 +832,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 75,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 90,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -904,15 +905,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 75,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 90,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -977,15 +978,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 75,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 90,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -1050,15 +1051,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 3,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 10,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -1135,12 +1136,12 @@
               "options": {
                 "1": {
                   "text": "ATIVO",
-                  "color": "green",
+                  "color": "#1F9D55",
                   "index": 0
                 },
                 "0": {
                   "text": "FALHOU / PARADO",
-                  "color": "red",
+                  "color": "#E5303B",
                   "index": 1
                 }
               }
@@ -1154,11 +1155,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 1,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -1218,12 +1219,12 @@
               "options": {
                 "1": {
                   "text": "NO AR",
-                  "color": "green",
+                  "color": "#1F9D55",
                   "index": 0
                 },
                 "0": {
                   "text": "FORA",
-                  "color": "red",
+                  "color": "#E5303B",
                   "index": 1
                 }
               }
@@ -1237,11 +1238,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 1,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -1329,7 +1330,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -1405,11 +1406,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 0.5,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           }
@@ -1443,12 +1444,20 @@
     {
       "type": "dashboards",
       "tags": [
-        "monitoramento"
+        "radar"
       ],
-      "asDropdown": false,
-      "title": "Monitoramento",
+      "asDropdown": true,
+      "title": "Radar",
       "includeVars": false,
       "keepTime": true
+    },
+    {
+      "type": "link",
+      "title": "Site ao vivo",
+      "url": "https://animaisfantasticos.infinitymais.com.br",
+      "targetBlank": true,
+      "icon": "external link",
+      "tags": []
     }
   ]
 }

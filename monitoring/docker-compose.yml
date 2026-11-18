@@ -17,7 +17,7 @@ services:
       - --web.listen-address=127.0.0.1:9090
       - --web.enable-lifecycle
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus:/etc/prometheus:ro
       - prometheus-data:/prometheus
     mem_limit: 512m
 
@@ -62,6 +62,11 @@ services:
       - /dev/disk/:/dev/disk:ro
     devices:
       - /dev/kmsg
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:8088/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
     mem_limit: 256m
 
   blackbox:
@@ -73,8 +78,60 @@ services:
       - --config.file=/etc/blackbox/blackbox.yml
       - --web.listen-address=127.0.0.1:9115
     volumes:
-      - ./blackbox/blackbox.yml:/etc/blackbox/blackbox.yml:ro
+      - ./blackbox:/etc/blackbox:ro
     mem_limit: 64m
+
+  # ---------------- Logs (mesma base do Tamoai-Infra: Loki + Promtail + GeoIP)
+  loki:
+    image: grafana/loki:3.6.11
+    container_name: mon-loki
+    network_mode: host
+    restart: unless-stopped
+    user: "10001:10001"
+    command: -config.file=/etc/loki/loki-config.yaml
+    volumes:
+      - ./loki:/etc/loki:ro
+      - loki-data:/loki
+    mem_limit: 512m
+
+  promtail:
+    image: grafana/promtail:3.6.11
+    container_name: mon-promtail
+    network_mode: host
+    restart: unless-stopped
+    command: -config.file=/etc/promtail/promtail-config.yaml
+    volumes:
+      - ./promtail:/etc/promtail:ro
+      - ./geoip:/geoip:ro
+      - /var/log/apache2:/var/log/apache2:ro
+      - /var/log/journal:/var/log/journal:ro
+      - /run/log/journal:/run/log/journal:ro
+      - /etc/machine-id:/etc/machine-id:ro
+      - promtail-positions:/positions
+    depends_on: [loki]
+    mem_limit: 192m
+
+  # API pública e anônima para o site do mapa (proxy do Apache em /api/)
+  trafego-api:
+    image: python:3.12-alpine
+    container_name: mon-trafego-api
+    network_mode: host
+    restart: unless-stopped
+    user: "65534:65534"
+    command: python -u /app/app.py
+    environment:
+      LOKI_URL: http://127.0.0.1:3100
+      LISTEN: 127.0.0.1:9300
+      SERVER_NAME: manager01hetzner
+      SERVER_CITY: Ashburn, EUA
+      SERVER_LAT: "39.0438"
+      SERVER_LON: "-77.4874"
+    volumes:
+      - ./traffic-api:/app:ro
+    depends_on: [loki]
+    mem_limit: 128m
 
 volumes:
   prometheus-data:
+  loki-data:
+  promtail-positions:

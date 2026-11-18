@@ -1,8 +1,9 @@
 {
   "uid": "mon-containers",
-  "title": "2. Containers - Parados e saúde",
+  "title": "Radar | 2. Containers",
   "description": "Container parado, réplicas faltando, restarts e consumo por container.",
   "tags": [
+    "radar",
     "monitoramento",
     "containers"
   ],
@@ -67,11 +68,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 1,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -135,11 +136,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 1,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -203,11 +204,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 1,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -271,15 +272,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 1,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 5,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -344,12 +345,12 @@
               "options": {
                 "1": {
                   "text": "NO AR",
-                  "color": "green",
+                  "color": "#1F9D55",
                   "index": 0
                 },
                 "0": {
                   "text": "FORA",
-                  "color": "red",
+                  "color": "#E5303B",
                   "index": 1
                 }
               }
@@ -360,11 +361,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 1,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -428,11 +429,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 180,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -497,12 +498,12 @@
               "options": {
                 "1": {
                   "text": "RODANDO",
-                  "color": "green",
+                  "color": "#1F9D55",
                   "index": 0
                 },
                 "0": {
                   "text": "PARADO",
-                  "color": "red",
+                  "color": "#E5303B",
                   "index": 1
                 }
               }
@@ -513,11 +514,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 1,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -581,11 +582,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 1,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -673,12 +674,12 @@
               "options": {
                 "1": {
                   "text": "RODANDO",
-                  "color": "green",
+                  "color": "#1F9D55",
                   "index": 0
                 },
                 "0": {
                   "text": "PARADO",
-                  "color": "red",
+                  "color": "#E5303B",
                   "index": 1
                 }
               }
@@ -692,11 +693,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "red"
+                "color": "#E5303B"
               },
               {
                 "value": 1,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -773,7 +774,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -849,7 +850,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -938,7 +939,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -1014,7 +1015,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -1090,7 +1091,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -1166,7 +1167,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -1336,12 +1337,12 @@
                     "options": {
                       "1": {
                         "text": "RODANDO",
-                        "color": "green",
+                        "color": "#1F9D55",
                         "index": 0
                       },
                       "0": {
                         "text": "PARADO",
-                        "color": "red",
+                        "color": "#E5303B",
                         "index": 1
                       }
                     }
@@ -1355,11 +1356,11 @@
                   "steps": [
                     {
                       "value": null,
-                      "color": "red"
+                      "color": "#E5303B"
                     },
                     {
                       "value": 1,
-                      "color": "green"
+                      "color": "#1F9D55"
                     }
                   ]
                 }
@@ -1393,12 +1394,12 @@
                     "options": {
                       "1": {
                         "text": "saudável",
-                        "color": "green",
+                        "color": "#1F9D55",
                         "index": 0
                       },
                       "0": {
                         "text": "UNHEALTHY",
-                        "color": "red",
+                        "color": "#E5303B",
                         "index": 1
                       },
                       "-1": {
@@ -1421,11 +1422,11 @@
                     },
                     {
                       "value": 0,
-                      "color": "red"
+                      "color": "#E5303B"
                     },
                     {
                       "value": 1,
-                      "color": "green"
+                      "color": "#1F9D55"
                     }
                   ]
                 }
@@ -1456,12 +1457,20 @@
     {
       "type": "dashboards",
       "tags": [
-        "monitoramento"
+        "radar"
       ],
-      "asDropdown": false,
-      "title": "Monitoramento",
+      "asDropdown": true,
+      "title": "Radar",
       "includeVars": false,
       "keepTime": true
+    },
+    {
+      "type": "link",
+      "title": "Site ao vivo",
+      "url": "https://animaisfantasticos.infinitymais.com.br",
+      "targetBlank": true,
+      "icon": "external link",
+      "tags": []
     }
   ]
 }

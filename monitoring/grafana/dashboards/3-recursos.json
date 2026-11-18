@@ -1,8 +1,9 @@
 {
   "uid": "mon-resources",
-  "title": "3. Recursos do servidor",
+  "title": "Radar | 3. Recursos",
   "description": "CPU, memória, disco, rede, OOM e pressão de recursos.",
   "tags": [
+    "radar",
     "monitoramento",
     "recursos"
   ],
@@ -67,15 +68,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 75,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 90,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -140,15 +141,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 75,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 90,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -213,15 +214,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 80,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 90,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -286,15 +287,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 1,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 2,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -359,11 +360,11 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 1,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -428,15 +429,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 10,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 25,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -530,7 +531,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           },
@@ -641,7 +642,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -763,7 +764,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -861,15 +862,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 20,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 50,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           }
@@ -958,15 +959,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 80,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 90,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           },
@@ -1044,15 +1045,15 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               },
               {
                 "value": 80,
-                "color": "orange"
+                "color": "#F5A623"
               },
               {
                 "value": 95,
-                "color": "red"
+                "color": "#E5303B"
               }
             ]
           }
@@ -1139,7 +1140,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -1215,7 +1216,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -1315,7 +1316,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -1391,7 +1392,7 @@
             "steps": [
               {
                 "value": null,
-                "color": "green"
+                "color": "#1F9D55"
               }
             ]
           }
@@ -1425,12 +1426,20 @@
     {
       "type": "dashboards",
       "tags": [
-        "monitoramento"
+        "radar"
       ],
-      "asDropdown": false,
-      "title": "Monitoramento",
+      "asDropdown": true,
+      "title": "Radar",
       "includeVars": false,
       "keepTime": true
+    },
+    {
+      "type": "link",
+      "title": "Site ao vivo",
+      "url": "https://animaisfantasticos.infinitymais.com.br",
+      "targetBlank": true,
+      "icon": "external link",
+      "tags": []
     }
   ]
 }

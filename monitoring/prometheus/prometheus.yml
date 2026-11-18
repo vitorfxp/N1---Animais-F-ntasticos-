@@ -23,6 +23,14 @@ scrape_configs:
     static_configs:
       - targets: ["127.0.0.1:3000"]
 
+  - job_name: loki
+    static_configs:
+      - targets: ["127.0.0.1:3100"]
+
+  - job_name: promtail
+    static_configs:
+      - targets: ["127.0.0.1:9080"]
+
   # ---- Disponibilidade das aplicações (HTTP) ----
   # Para adicionar uma aplicação: inclua uma linha em targets com o nome em "app".
   - job_name: probe_http
@@ -36,8 +44,12 @@ scrape_configs:
         labels: { app: "Site manager01hetzner (Apache)" }
       - targets: ["http://127.0.0.1:3001/"]
         labels: { app: "Uptime Kuma (:3001)" }
-      - targets: ["http://127.0.0.1:3000/api/health"]
-        labels: { app: "Grafana (:3000)" }
+      - targets: ["https://grafana.infinitymais.com.br/api/health"]
+        labels: { app: "Grafana (grafana.infinitymais.com.br)" }
+      - targets: ["https://animaisfantasticos.infinitymais.com.br/"]
+        labels: { app: "Site mapa de tráfego" }
+      - targets: ["https://animaisfantasticos.infinitymais.com.br/api/saude"]
+        labels: { app: "API do mapa de tráfego" }
     relabel_configs: &probe_relabel
       - source_labels: [__address__]
         target_label: __param_target
