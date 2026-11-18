@@ -4305,14 +4305,6 @@
       "targetBlank": true,
       "icon": "external link",
       "tags": []
-    },
-    {
-      "type": "link",
-      "title": "Base: Tamoai-Infra",
-      "url": "https://github.com/guisosi/Tamoai-Infra",
-      "targetBlank": true,
-      "icon": "doc",
-      "tags": []
     }
   ],
   "version": 1

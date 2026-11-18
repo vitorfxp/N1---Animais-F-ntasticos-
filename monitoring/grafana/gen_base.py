@@ -345,9 +345,7 @@ def mapa_de_trafego():
     d = recolorir(d)
     identidade(d, "radar-mapa", "Radar | Mapa de tráfego", ["trafego", "loki", "geoip"],
                "Origem do tráfego que chega no servidor (Apache + SSH) com GeoIP. Adaptado do "
-               "'Nimbus | Mapa de calor' do Tamoai-Infra.",
-               [{"type": "link", "title": "Base: Tamoai-Infra", "url": "https://github.com/guisosi/Tamoai-Infra",
-                 "targetBlank": True, "icon": "doc", "tags": []}])
+               "'Nimbus | Mapa de calor' do Tamoai-Infra.")
     return d
 
 
